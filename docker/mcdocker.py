@@ -15,7 +15,11 @@ def run_docker_mc_command(container_id=None, message=""):
     client = docker.from_env()
 
     container = client.containers.get(container_id)
-    container.exec_run(f"rcon-cli {message}")
+    output = container.exec_run(f"rcon-cli {message}")
+    if output[0] != 0:
+        print(f"Failed to run RCON command, exit code {output[0]}")
+        return
+    print(f"{output[1].decode()}")
 
 def stop_docker(container_id=None):
     if container_id is None:
@@ -38,6 +42,6 @@ def start_docker(container_id=None):
 
 if __name__ == "__main__":
     #make_server()
-    #run_docker_mc_command("mc", "/say hi")
+    run_docker_mc_command("mc", "/banlist players")
     #stop_docker("mc")  
-    start_docker("mc")  
+    #start_docker("mc")  
