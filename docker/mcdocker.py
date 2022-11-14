@@ -1,9 +1,9 @@
 import docker
 
 
-def make_server(return_container=False, port=25565):
+def make_server(return_container=False, name="mc-default", port=25565):
     client = docker.from_env() 
-    mc_server_container = client.containers.run(image="itzg/minecraft-server", detach=True, ports={f"{port}":f"{port}"}, name="mc", environment=["EULA=True"])
+    mc_server_container = client.containers.run(image="itzg/minecraft-server", detach=True, ports={"25565":f"{port}"}, name=f"{name}", environment=["EULA=True"])
     if return_container:
         return mc_server_container
     else:
@@ -42,6 +42,7 @@ def start_docker(container_id=None):
 
 if __name__ == "__main__":
     make_server()
+    make_server(name="mc-default-2", port=25567)
     #run_docker_mc_command("mc", "/banlist players")
     #stop_docker("mc")  
     #start_docker("mc")  
