@@ -5,9 +5,8 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.declarative import declarative_base
 
-def setup_models(app: Flask, db: SQLAlchemy):
-  Base = declarative_base()
-  
+def setup_models(db: SQLAlchemy):
+  # Base = declarative_base()
   class UserServerRole(db.Model):
     __tablename__ = 'user_server_roles'
     id = db.Column(db.Integer, primary_key=True)
@@ -47,15 +46,6 @@ def setup_models(app: Flask, db: SQLAlchemy):
     # Server description, server configuration files, etc.
     resource = db.Column(db.Unicode, nullable=False)
 
-  # make sure table names are correct
-  class User(db.Model):
-    __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
-    password = db.Column(db.Unicode, nullable=False)
-    email = db.Column(db.Unicode, nullable=False)
-    username = db.Column(db.Unicode, nullable=False)
-    site_role = db.Column(db.Integer, db.ForeignKey('site_roles.id'))
-    servers = db.relationship('Server', secondary=UserServerRole, back_populates='users')
 
   # make sure table names are correct
   class Server(db.Model):
@@ -71,7 +61,7 @@ def setup_models(app: Flask, db: SQLAlchemy):
     tags = db.relationship('Tag', secondary=ServerTag, backref='server')
 
   class SiteRole(db.Model):
-    __tablename__ = 'site_roles',
+    __tablename__ = 'site_roles'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode, nullable=False)
     # view, create (purchase), etc.
@@ -80,6 +70,17 @@ def setup_models(app: Flask, db: SQLAlchemy):
     resource = db.Column(db.Unicode, nullable=False)
     users = db.relationship('User', backref='site_role')
 
+  
+  # make sure table names are correct
+  class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    password = db.Column(db.Unicode, nullable=False)
+    email = db.Column(db.Unicode, nullable=False)
+    username = db.Column(db.Unicode, nullable=False)
+    site_role = db.Column(db.Integer, db.ForeignKey(SiteRole.id))
+    servers = db.relationship('Server', secondary=UserServerRole, back_populates='users')
+
   return User, Server, Tag, SiteRole, ServerTag, ServerRolePermission, UserServerRole, ServerEvent
 
 ########################################################################
@@ -87,19 +88,13 @@ def setup_models(app: Flask, db: SQLAlchemy):
 ########################################################################
 
 def init(db: SQLAlchemy, dbpath: str = None, seed: bool = False):
+  print("hi")
   """
   Initializes the database at the given path `dbpath`. By default, no data is inserted
   to the database. `seed=True` will seed the database.
   """
-  if dbpath == None:
-    scriptdir = os.path.abspath(os.path.dirname(__file__))
-    dbpath = os.path.join(scriptdir, 'server_hosting.sqlite3')
-    
-  if os.path.isfile(dbpath):
-    return False
-  else:
-    models_reset(db, seed=seed)
-    return True
+  models_reset(db, seed=seed)
+  return True
 
 def models_reset(db: SQLAlchemy, seed: bool=False):
   """Drops all tables and recreates them with. `seed=True` will insert dummy data into the database"""
@@ -110,6 +105,7 @@ def models_reset(db: SQLAlchemy, seed: bool=False):
 
 def models_seed(db: SQLAlchemy):
   # TODO: Seed the tables with admin accounts.
+  User, Server, Tag, SiteRole, ServerTag, ServerRolePermission, UserServerRole, ServerEvent = setup_models(db)
   siteRoleOne = SiteRole(name="admin", action="create", resource="server")
 
   db.session.add(siteRoleOne)
@@ -120,6 +116,8 @@ def models_seed(db: SQLAlchemy):
 
   db.session.add(userOne)
   db.session.commit()
+
+  print("user added to database")
 
   tags = [
     Tag(name="SMP"),
