@@ -115,7 +115,7 @@ class SiteRole(db.Model):
   action = db.Column(db.Unicode, nullable=False)
   # Site Dashboard, servers, etc.
   resource = db.Column(db.Unicode, nullable=False)
-  users = db.relationship('User')
+  users = db.relationship('User', backref='site_role')
 
 class User(db.Model):
   __tablename__ = 'users'
@@ -123,13 +123,13 @@ class User(db.Model):
   password = db.Column(db.Unicode, nullable=False)
   email = db.Column(db.Unicode, nullable=False)
   username = db.Column(db.Unicode, nullable=False)
-  site_role = db.Column(db.Integer, db.ForeignKey(SiteRole.id))
+  site_role_id = db.Column(db.Integer, db.ForeignKey(SiteRole.id))
   servers = db.relationship('Server', secondary=UserServerRole, back_populates='users')
 
 with app.app_context():
   # User, Server, Tag, SiteRole, ServerTag, ServerRolePermission, UserServerRole, ServerEvent = models.setup_models(db)
   models.init(db, seed=True, tables=(User, Server, Tag, SiteRole, ServerTag, ServerRolePermission, UserServerRole, ServerEvent))
-  siteRoleOne = SiteRole(name="admin", action="create", resource="server")
+  # siteRoleOne = SiteRole(name="admin", action="create", resource="server")
 
-  db.session.add(siteRoleOne)
-  db.session.commit() 
+  # db.session.add(siteRoleOne)
+  # db.session.commit() 
