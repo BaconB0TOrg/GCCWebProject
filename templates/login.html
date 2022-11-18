@@ -24,14 +24,14 @@
         </div>
         {% endfor %}
     </div>
-    <form action="/register/" method="post">
+    <form action="/login/" method="post">
         {{ form.hidden_tag() }}
 
         <div class="row mb-auto">
             {# add name field and label #}
             <div class="form-group col-sm-12 col-lg-6 col-xl-4">
-                {{ form.name.label }}
-                {{ form.name() }}
+                {{ form.username.label }}
+                {{ form.username() }}
             </div>
             <div class="form-group col-sm-12 col-lg-6 col-xl-4">
                 {{ form.password.label }}

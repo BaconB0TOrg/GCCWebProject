@@ -38,6 +38,7 @@ def get_register():
 def post_login():
   form = LoginForm()
   if form.validate():
+    # get user if exists and go from there
     return redirect(url_for('welcome'))
   else:
     for field,error in form.errors.items():
@@ -48,6 +49,7 @@ def post_login():
 def post_register():
     form = RegisterForm()
     if form.validate():
+        # TODO: save to db
         return redirect(url_for('welcome'))
     else:
         # flash error messages for all validation problems 
@@ -90,9 +92,7 @@ def get_terminal(serverId):
 @app.get('/mc_command/')
 def mc_command():
   query = request.args
-  print(query.get("command"))
-  print(query.get("docker-id"))
-  rcon_response = mcdocker.run_docker_mc_command(query.get('docker-id'), query.get("command", "Sorry foo"))
+  rcon_response = mcdocker.run_docker_mc_command(query.get('docker-id'), query.get("command"))
   print(rcon_response)
   response = jsonify(message=rcon_response)
   return response
