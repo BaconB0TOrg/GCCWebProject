@@ -104,7 +104,3 @@ with app.app_context():
   #models.init(db, dbpath=dbpath, seed=True) 
   User, Server, Tag, SiteRole, ServerTag, ServerRolePermission, UserServerRole, ServerEvent = models.setup_models(db)
   models.init(db, seed=False, tables=(User, Server, Tag, SiteRole, ServerTag, ServerRolePermission, UserServerRole, ServerEvent))
-  # siteRoleOne = SiteRole(name="admin", action="create", resource="server")
-
-  # db.session.add(siteRoleOne)
-  # db.session.commit() 

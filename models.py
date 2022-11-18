@@ -1,11 +1,18 @@
 import enum
 import os
 
-from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 def setup_models(db: SQLAlchemy):
   User = Server = Tag = SiteRole = ServerTag = ServerRolePermission = UserServerRole = ServerEvent = None
+  existing_tables = [db.metadata.tables.get(key) for key in db.metadata.tables.keys()]
+  if(len(existing_tables) != 0):
+    # if(db.metadata.tables.get('User') != None):
+    # make logging a separate module
+    if(os.getenv('log_level') in ['debug', 'warn', 'error']):
+      print("[error]: Tables already defined! Do not call setup_models more than once in the project.")
+    raise Exception("setup_models should not be called when tables are already defined (this means it is called somewhere else first and should not be called again).")
+
   # Base = declarative_base()
   UserServerRole = db.Table(
     'user_server_roles',
