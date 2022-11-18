@@ -15,6 +15,10 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+@app.get('/')
+def redirect_to_welcome():
+  return redirect('/welcome/')
+
 @app.get('/welcome/')
 def welcome():
     return render_template("home.html")
