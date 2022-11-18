@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, EmailField, PasswordField, SubmitField, FileField, TextAreaField
+from wtforms import StringField, EmailField, PasswordField, SubmitField, FileField, TextAreaField, SelectField, IntegerField
 from wtforms.validators import InputRequired, EqualTo, Email, Length
 
 class LoginForm(FlaskForm):
@@ -15,3 +15,11 @@ class RegisterForm(FlaskForm):
     confirm_password = PasswordField("Confirm Password", validators=[InputRequired(), EqualTo('password', message="Passwords Do Not Match.")])
     submit = SubmitField("Submit")
     
+class ServerForm(FlaskForm):
+    name = StringField("Name", validators=[InputRequired()])
+    description = StringField("Description", validators=[InputRequired()])
+    tags = SelectField("Tags")
+    maxPlayers = IntegerField("Maximum Players", validators=[InputRequired()])
+    OwnerID = IntegerField("Owner ID", validators=[InputRequired()])
+    DockerID = IntegerField("Docker ID", validators=[InputRequired()])
+    submit = SubmitField("Submit")

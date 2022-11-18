@@ -62,6 +62,18 @@ UserServerRole = db.Table(
   db.Column('role_name', db.Unicode, db.ForeignKey('server_role_permissions.role_name'))
 )
 
+# setup database table
+class Server(db.Model):
+  __tablename__='Servers'
+  ServerID = db.Column(db.Integer, primary_key=True)
+  name = db.Column(db.Unicode, nullable=False)
+  description = db.Column(db.Unicode, nullable=False)
+  tags = db.Column(db.Unicode)
+  maxPlayers = db.Column(db.Integer, nullable=False)
+  OwnerID = db.Column(db.Integer, foreign_key=True, nullable=False)
+  DockerID = db.Column(db.Integer, nullable=False)
+  Events = db.Column(db.Unicode)
+
 class ServerEvent(db.Model):
   __tablename__ = 'server_events'
   id = db.Column(db.Integer, primary_key=True)
