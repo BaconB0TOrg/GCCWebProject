@@ -7,9 +7,10 @@ from flask_sqlalchemy import SQLAlchemy
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 dbpath = os.path.join(scriptdir, 'server_hosting.sqlite3')
 
-from forms import LoginForm, RegisterForm
+from forms import LoginForm, RegisterForm, ServerForm
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = "somesecretkeythatislongenoughcool"
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{dbpath}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -55,17 +56,27 @@ def post_register():
         return redirect(url_for('get_register'))
 
 @app.get('/server/')
-def server():
-  return render_template('server.html')
+def get_server():
+  sf = ServerForm()
+  return render_template('server.html', form=sf)
 
-@app.get('/start-server/')
-def start_server():
-  docker_id = mcdocker.make_server()
-  server = Server(name="Papa Murphy's MC Server", docker_id=docker_id, max_players=20)
-  db.session.add(server)
-  db.session.commit()
-  s = Server.query.filter_by(docker_id=docker_id).first()
-  return redirect(f'/terminal/{s.id}')
+@app.post('/server/')
+def post_server():
+  sf = ServerForm()
+  if sf.validate_on_submit():
+    numPortsUsed = Server.query.count()
+    docker_id = mcdocker.make_server(name=sf.name.data,port=25565+numPortsUsed*2)
+    # TODO: Make max_players configurable by the user to some upper limit
+    server = Server(name=sf.name.data, docker_id=docker_id, max_players=20)
+    db.session.add(server)
+    db.session.commit()
+    s = Server.query.filter_by(docker_id=docker_id).first()
+    return redirect(f'/terminal/{s.id}')
+  else:
+    for (k, v) in sf.errors.items():
+      flash(f"{k}: {v}")
+  return redirect('/server/')
+
 
 @app.get('/terminal/<int:serverId>')
 def get_terminal(serverId):

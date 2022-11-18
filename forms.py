@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, EmailField, PasswordField, SubmitField, FileField, TextAreaField, SelectField, IntegerField
-from wtforms.validators import InputRequired, EqualTo, Email, Length
+from wtforms.validators import InputRequired, EqualTo, Email, Length, Optional
 
 class LoginForm(FlaskForm):
     username = StringField("Name", validators=[InputRequired()])
@@ -17,9 +17,8 @@ class RegisterForm(FlaskForm):
     
 class ServerForm(FlaskForm):
     name = StringField("Name", validators=[InputRequired()])
-    description = StringField("Description", validators=[InputRequired()])
-    tags = SelectField("Tags")
+    description = StringField("Description", validators=[Optional()])
+    tags = SelectField("Tags", choices=[('SMP', 'SMP')], validators=[Optional()])
     maxPlayers = IntegerField("Maximum Players", validators=[InputRequired()])
-    OwnerID = IntegerField("Owner ID", validators=[InputRequired()])
-    DockerID = IntegerField("Docker ID", validators=[InputRequired()])
+    OwnerID = IntegerField("Owner ID", validators=[Optional()]) #, validators=[InputRequired()]
     submit = SubmitField("Submit")

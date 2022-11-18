@@ -18,7 +18,21 @@
 </head>
 <body>
   {% if not server %}
-  <a id="startServer" href="/start-server/">Create a Server</a>
+  <form method="post" action="/server/">
+    {{ form.hidden_tag() }}
+    {{ form.name.label }}
+    {{ form.name() }}
+    {{ form.description.label }}
+    {{ form.description() }}
+    {{ form.tags.label }}
+    {{ form.tags() }}
+    {{ form.maxPlayers.label }}
+    {{ form.maxPlayers() }}
+    {{ form.OwnerID.label }}
+    {{ form.OwnerID() }}
+    {{ form.submit() }}
+    <!-- <a id="startServer" href="/start-server/">Create a Server</a> -->
+  </form>
   {% else %}
   <p>server stats go here</p>
   {% endif %}
