@@ -1,7 +1,5 @@
 import mc_lib.mcdocker as mcdocker
-import os
-import sys
-import models
+import os, sys, models, json
 from flask import Flask
 from flask import render_template, url_for, redirect, flash, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
@@ -56,6 +54,38 @@ def post_register():
             flash(f"{field}: {error}")
         return redirect(url_for('get_register'))
 
+@app.get('/server/')
+def server():
+  return render_template('server.html')
+
+@app.get('/start-server/')
+def start_server():
+  docker_id = mcdocker.make_server()
+  server = Server(name="Papa Murphy's MC Server", docker_id=docker_id, max_players=20)
+  db.session.add(server)
+  db.session.commit()
+  s = Server.query.all()
+  return redirect(f'/terminal/{s[0].id}')
+
+@app.get('/terminal/<int:serverId>')
+def get_terminal(serverId):
+  if serverId == None:
+    return redirect('400.html', 400)
+  # Assumes it exists, which is bad
+  server = Server.query.filter_by(id=serverId).first()
+  
+  return render_template('terminal.html', docker_id=server.docker_id)
+
+@app.get('/mc_command/')
+def mc_command():
+  query = request.args
+  print(query.get("command"))
+  print(query.get("docker-id"))
+  rcon_response = mcdocker.run_docker_mc_command(query.get('docker-id'), query.get("command", "Sorry foo"))
+  print(rcon_response)
+  response = jsonify(message=rcon_response)
+  return response
+
 UserServerRole = db.Table(
   'user_server_roles',
   db.Column('id', db.Integer, primary_key=True),
@@ -63,18 +93,6 @@ UserServerRole = db.Table(
   db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
   db.Column('role_name', db.Unicode, db.ForeignKey('server_role_permissions.role_name'))
 )
-
-# setup database table
-class Server(db.Model):
-  __tablename__='Servers'
-  ServerID = db.Column(db.Integer, primary_key=True)
-  name = db.Column(db.Unicode, nullable=False)
-  description = db.Column(db.Unicode, nullable=False)
-  tags = db.Column(db.Unicode)
-  maxPlayers = db.Column(db.Integer, nullable=False)
-  OwnerID = db.Column(db.Integer, foreign_key=True, nullable=False)
-  DockerID = db.Column(db.Integer, nullable=False)
-  Events = db.Column(db.Unicode)
 
 class ServerEvent(db.Model):
   __tablename__ = 'server_events'
@@ -145,26 +163,8 @@ with app.app_context():
   #User, Server, Tag, SiteRole, ServerTag, ServerRolePermission, UserServerRole, ServerEvent = models.setup_models(db)
   #models.init(db, dbpath=dbpath, seed=True) 
   # User, Server, Tag, SiteRole, ServerTag, ServerRolePermission, UserServerRole, ServerEvent = models.setup_models(db)
-  models.init(db, seed=True, tables=(User, Server, Tag, SiteRole, ServerTag, ServerRolePermission, UserServerRole, ServerEvent))
+  models.init(db, seed=False, tables=(User, Server, Tag, SiteRole, ServerTag, ServerRolePermission, UserServerRole, ServerEvent))
   # siteRoleOne = SiteRole(name="admin", action="create", resource="server")
 
   # db.session.add(siteRoleOne)
   # db.session.commit() 
-
-@app.get('/terminal/')
-def get_terminal():
-  return render_template('terminal.html')
-
-@app.get('/mc_command/')
-def mc_command():
-  query = request.args
-  print(query.get("command"))
-  rcon_response = mcdocker.run_docker_mc_command("mc", query.get("command", "Sorry foo"))
-  print(rcon_response)
-  response = jsonify(message=rcon_response)
-  return response
-
-
-
-
-  
