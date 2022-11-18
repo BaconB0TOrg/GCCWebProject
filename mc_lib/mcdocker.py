@@ -19,8 +19,12 @@ def make_server(return_container=False, name="mc-default", port=25565):
     String
         Id of the docker container that was created using this function
     """
-    client = docker.from_env() 
-    mc_server_container = client.containers.run(image="itzg/minecraft-server", detach=True, ports={"25565":f"{port}"}, name=f"{name}", environment=["EULA=True"])
+    try:
+        client = docker.from_env() 
+        mc_server_container = client.containers.run(image="itzg/minecraft-server", detach=True, ports={"25565":f"{port}"}, name=f"{name}", environment=["EULA=True"])
+    except Exception as e:
+        print(e)
+
     if return_container:
         return mc_server_container
     else:
@@ -49,12 +53,15 @@ def run_docker_mc_command(container_id=None, message=""):
         return
     client = docker.from_env()
 
-    container = client.containers.get(container_id)
-    output = container.exec_run(f"rcon-cli {message}")
+    try:
+        container = client.containers.get(container_id)
+        output = container.exec_run(f"rcon-cli {message}")
+    except Exception as e:
+        print(e)
+
     if output[0] != 0:
         print(f"Failed to run RCON command, exit code {output[0]}")
         return
-    #print(f"{output[1].decode()}")
     return output[1].decode()
 
 def stop_docker(container_id=None):
@@ -72,10 +79,14 @@ def stop_docker(container_id=None):
     """
     if container_id is None:
         return
-    client = docker.from_env()
+    
+    try:
+        client = docker.from_env()
 
-    container = client.containers.get(container_id)
-    container.stop()
+        container = client.containers.get(container_id)
+        container.stop()
+    except Exception as e:
+        print(e)
 
 def start_docker(container_id=None):
     """
@@ -92,17 +103,42 @@ def start_docker(container_id=None):
     """
     if container_id is None:
         return
-    client = docker.from_env()
+    try:
+        client = docker.from_env()
     
-    container = client.containers.get(container_id)
-    container.start()
+        container = client.containers.get(container_id)
+        container.start()
+    except Exception as e:
+        print(e)
 
+def remove_docker(container_id=None):
+    """
+    Function to delete a docker, used if the user decides to delete a button
+    
+    Keyword arguments:
+    container_id : String, optional
+    Defaults to None, this can be the dockers id or container name.
+    Return: None
+    """
+    if container_id is None:
+        return
+    client = docker.from_env()
+
+    try:
+        container = client.containers.get(container_id)
+        container.stop()
+        container.remove(v=True, link=False, force=True)
+    except Exception as e:
+        print(e)
+
+    
 
 
 if __name__ == "__main__":
     #make_server()
     #make_server(name="mc-default-2", port=25567)
-    run_docker_mc_command("mc", "/banlist players")
+    #run_docker_mc_command("mc", "/banlist players")
     #stop_docker("mc")  
     #start_docker("mc")  
+    remove_docker("mc")
     pass
