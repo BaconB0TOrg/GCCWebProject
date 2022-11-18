@@ -67,6 +67,7 @@ def post_server():
   sf = ServerForm()
   if sf.validate_on_submit():
     numPortsUsed = Server.query.count()
+    # this calc won't work if we delete servers who no longer have docker containers from the db.
     docker_id = mcdocker.make_server(name=sf.name.data,port=25565+numPortsUsed*2)
     # TODO: Make max_players configurable by the user to some upper limit
     server = Server(name=sf.name.data, docker_id=docker_id, max_players=20)
@@ -97,83 +98,11 @@ def mc_command():
   response = jsonify(message=rcon_response)
   return response
 
-UserServerRole = db.Table(
-  'user_server_roles',
-  db.Column('id', db.Integer, primary_key=True),
-  db.Column('server_id', db.Integer, db.ForeignKey('servers.id')),
-  db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
-  db.Column('role_name', db.Unicode, db.ForeignKey('server_role_permissions.role_name'))
-)
-
-class ServerEvent(db.Model):
-  __tablename__ = 'server_events'
-  id = db.Column(db.Integer, primary_key=True)
-  description = db.Column(db.Unicode, nullable=True)
-  name = db.Column(db.Unicode, nullable=False)
-  server_id = db.Column(db.Integer, db.ForeignKey('servers.id'))
-  # Maybe no image
-  # img = db.Column
-
-class Tag(db.Model):
-  __tablename__ = 'tags'
-  id = db.Column(db.Integer, primary_key=True)
-  name = db.Column(db.Unicode, nullable=False)
-
-ServerTag = db.Table(
-  'server_tags',
-  db.Column('id', db.Integer, primary_key=True),
-  db.Column('server_id', db.Integer, db.ForeignKey('servers.id')),
-  db.Column('tag_id', db.Integer, db.ForeignKey('tags.id'))
-)
-
-class ServerRolePermission(db.Model):
-  __tablename__ = 'server_role_permissions'
-  id = db.Column(db.Integer, primary_key=True)
-  server_id = db.Column(db.Integer, db.ForeignKey('servers.id'))
-  # let users give custom names to roles. 
-  # Also lets them define new roles with different sets of permissions
-  role_name = db.Column(db.Unicode, nullable=False)
-  # read, write, etc.
-  action = db.Column(db.Unicode, nullable=False)
-  # Server description, server configuration files, etc.
-  resource = db.Column(db.Unicode, nullable=False)
-
-class Server(db.Model):
-  __tablename__ = 'servers'
-  id = db.Column(db.Integer, primary_key=True)
-  name = db.Column(db.Unicode, nullable=False)
-  description = db.Column(db.Unicode, nullable=True) #  nullable!
-  docker_id = db.Column(db.Unicode, nullable=False)
-  max_players = db.Column(db.Integer, nullable=False)
-  users = db.relationship('User', secondary=UserServerRole, back_populates='servers')
-  roles = db.relationship(ServerRolePermission, backref='server')
-  events = db.relationship(ServerEvent, backref='sever')
-  tags = db.relationship('Tag', secondary=ServerTag, backref='server')
-
-class SiteRole(db.Model):
-  __tablename__ = 'site_roles'
-  id = db.Column(db.Integer, primary_key=True)
-  name = db.Column(db.Unicode, nullable=False)
-  # view, create (purchase), etc.
-  action = db.Column(db.Unicode, nullable=False)
-  # Site Dashboard, servers, etc.
-  resource = db.Column(db.Unicode, nullable=False)
-  users = db.relationship('User', backref='site_role')
-
-class User(db.Model):
-  __tablename__ = 'users'
-  id = db.Column(db.Integer, primary_key=True)
-  password = db.Column(db.Unicode, nullable=False)
-  email = db.Column(db.Unicode, nullable=False)
-  username = db.Column(db.Unicode, nullable=False)
-  site_role_id = db.Column(db.Integer, db.ForeignKey(SiteRole.id))
-  servers = db.relationship('Server', secondary=UserServerRole, back_populates='users')
-
 with app.app_context():
   print(dbpath)
   #User, Server, Tag, SiteRole, ServerTag, ServerRolePermission, UserServerRole, ServerEvent = models.setup_models(db)
   #models.init(db, dbpath=dbpath, seed=True) 
-  # User, Server, Tag, SiteRole, ServerTag, ServerRolePermission, UserServerRole, ServerEvent = models.setup_models(db)
+  User, Server, Tag, SiteRole, ServerTag, ServerRolePermission, UserServerRole, ServerEvent = models.setup_models(db)
   models.init(db, seed=False, tables=(User, Server, Tag, SiteRole, ServerTag, ServerRolePermission, UserServerRole, ServerEvent))
   # siteRoleOne = SiteRole(name="admin", action="create", resource="server")
 

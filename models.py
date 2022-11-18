@@ -7,12 +7,13 @@ from flask_sqlalchemy import SQLAlchemy
 def setup_models(db: SQLAlchemy):
   User = Server = Tag = SiteRole = ServerTag = ServerRolePermission = UserServerRole = ServerEvent = None
   # Base = declarative_base()
-  class UserServerRole(db.Model):
-    __tablename__ = 'user_server_roles'
-    id = db.Column(db.Integer, primary_key=True)
-    server_id = db.Column(db.Integer, db.ForeignKey('servers.id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    role_name = db.Column(db.Unicode, db.ForeignKey('server_role_permissions.role_name'))
+  UserServerRole = db.Table(
+    'user_server_roles',
+    db.Column('id', db.Integer, primary_key=True),
+    db.Column('server_id', db.Integer, db.ForeignKey('servers.id')),
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
+    db.Column('role_name', db.Unicode, db.ForeignKey('server_role_permissions.role_name'))
+  )
 
   class ServerEvent(db.Model):
     __tablename__ = 'server_events'
@@ -28,11 +29,12 @@ def setup_models(db: SQLAlchemy):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode, nullable=False)
 
-  class ServerTag(db.Model):
-    __tablename__ = 'server_tags'
-    id = db.Column(db.Integer, primary_key=True)
-    server_id = db.Column(db.Integer, db.ForeignKey('servers.id'))
-    tag_id = db.Column(db.Integer, db.ForeignKey('tags.id'))
+  ServerTag = db.Table(
+    'server_tags',
+    db.Column('id', db.Integer, primary_key=True),
+    db.Column('server_id', db.Integer, db.ForeignKey('servers.id')),
+    db.Column('tag_id', db.Integer, db.ForeignKey('tags.id'))
+  )
 
   class ServerRolePermission(db.Model):
     __tablename__ = 'server_role_permissions'
@@ -74,7 +76,7 @@ def setup_models(db: SQLAlchemy):
     password = db.Column(db.Unicode, nullable=False)
     email = db.Column(db.Unicode, nullable=False)
     username = db.Column(db.Unicode, nullable=False)
-    site_role = db.Column(db.Integer, db.ForeignKey(SiteRole.id))
+    site_role_id = db.Column(db.Integer, db.ForeignKey(SiteRole.id))
     servers = db.relationship('Server', secondary=UserServerRole, back_populates='users')
 
   return User, Server, Tag, SiteRole, ServerTag, ServerRolePermission, UserServerRole, ServerEvent
@@ -109,7 +111,7 @@ def models_seed(db: SQLAlchemy, tableClasses):
   db.session.commit()
   
   siteRoles = SiteRole.query.all()
-  userOne = User(username="admin", email="admin@email.com", password="admin", site_role=siteRoles[0].id)
+  userOne = User(username="admin", email="admin@email.com", password="admin", site_role_id=siteRoles[0].id)
 
   db.session.add(userOne)
   db.session.commit()
