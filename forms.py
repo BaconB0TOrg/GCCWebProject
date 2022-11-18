@@ -20,5 +20,6 @@ class ServerForm(FlaskForm):
     description = StringField("Description", validators=[Optional()])
     tags = SelectField("Tags", choices=[('SMP', 'SMP')], validators=[Optional()])
     maxPlayers = IntegerField("Maximum Players", validators=[InputRequired()])
-    OwnerID = IntegerField("Owner ID", validators=[Optional()]) #, validators=[InputRequired()]
+    # Should not be a field at all. Handled by server based on who is making the server.
+    # OwnerID = IntegerField("Owner ID", validators=[Optional()]) #, validators=[InputRequired()]
     submit = SubmitField("Submit")
