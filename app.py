@@ -1,7 +1,7 @@
 import mc_lib.mcdocker as mcdocker
-import os, sys, models, json
+import os, models
 from flask import Flask
-from flask import render_template, url_for, redirect, flash, jsonify, request
+from flask import render_template, url_for, redirect, flash, jsonify, request, session
 from flask_sqlalchemy import SQLAlchemy
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
@@ -29,57 +29,98 @@ def get_login():
     form = LoginForm()
     return render_template("login.html", form=form)
 
-@app.get('/register/')
-def get_register():
-    form = RegisterForm()
-    return render_template("register.html", form=form)
-
 @app.post("/login/")
 def post_login():
   form = LoginForm()
   if form.validate():
     # get user if exists and go from there
+    email = form.username.data
+    pw = form.password.data
+    # TODO: auth user
+    user = User.query.filter_by(email=email, password=pw).first()
+    if user == None:
+      flash("Incorrect username and password combination!")
+      return redirect(url_for('get_login'))
     return redirect(url_for('welcome'))
   else:
     for field,error in form.errors.items():
       flash(f"{field}: {error}")
     return redirect(url_for('get_login'))
 
+@app.get('/register/')
+def get_register():
+    form = RegisterForm()
+    return render_template("register.html", form=form)
+
 @app.post('/register/')
 def post_register():
     form = RegisterForm()
     if form.validate():
         # TODO: save to db
-        return redirect(url_for('welcome'))
+        pw = form.password.data
+        email = form.email.data
+        uname = form.username.data
+        user = User(password=pw, email=email, username=uname)
+        db.session.add(user)
+        db.session.commit()
+        user = User.query.filter_by(email=email).first()
+        session['user-email'] = user.email
+        return redirect('/server/')
     else:
         # flash error messages for all validation problems 
         for field,error in form.errors.items():
             flash(f"{field}: {error}")
         return redirect(url_for('get_register'))
 
+@app.get('/server/<int:server_id>/')
+def show_server(server_id):
+  server = Server.query.filter_by(id=server_id).first()
+  return render_template('server.html', server=server)
+
+@app.get('/server/<int:server_id>/delete')
+def delete_server(server_id):
+  server = Server.query.filter_by(id=server_id).first()
+  mcdocker.remove_docker(container_id=server.docker_id)
+  db.session.delete(server)
+  db.session.commit()
+  return redirect('/server/')
+
 @app.get('/server/')
-def get_server():
+def list_server():
   sf = ServerForm()
-  return render_template('server.html', form=sf)
+  # do something to make sure users can't edit their token
+  # and be logged in to someone else's account.
+  email=session.get('user-email')
+  if email == None:
+    flash('You have to be logged in to access that page!')
+    return redirect('/login/')
+
+  user = User.query.filter_by(email=email).first()
+  if user == None:
+    flash('You have to be logged in to access that page!')
+    return redirect('/login/')
+  servers = Server.query.filter_by(owner_id=user.id).all()
+  return render_template('server.html', form=sf, servers=servers)
 
 @app.post('/server/')
 def post_server():
   sf = ServerForm()
   if sf.validate_on_submit():
     numPortsUsed = Server.query.count()
+    email = session.get('user-email')
+    user = User.query.filter_by(email=email).first()
     # this calc won't work if we delete servers who no longer have docker containers from the db.
     docker_id = mcdocker.make_server(name=sf.name.data,port=25565+numPortsUsed*2)
     # TODO: Make max_players configurable by the user to some upper limit
-    server = Server(name=sf.name.data, docker_id=docker_id, max_players=20)
+    server = Server(name=sf.name.data, docker_id=docker_id, owner_id=user.id, max_players=20)
     db.session.add(server)
     db.session.commit()
     s = Server.query.filter_by(docker_id=docker_id).first()
-    return redirect(f'/terminal/{s.id}')
+    return redirect(f'/server/')
   else:
     for (k, v) in sf.errors.items():
       flash(f"{k}: {v}")
   return redirect('/server/')
-
 
 @app.get('/terminal/<int:serverId>')
 def get_terminal(serverId):

@@ -62,6 +62,7 @@ def setup_models(db: SQLAlchemy):
     description = db.Column(db.Unicode, nullable=True) #  nullable!
     docker_id = db.Column(db.Unicode, nullable=False)
     max_players = db.Column(db.Integer, nullable=False)
+    owner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     users = db.relationship('User', secondary=UserServerRole, back_populates='servers')
     roles = db.relationship(ServerRolePermission, backref='server')
     events = db.relationship(ServerEvent, backref='sever')

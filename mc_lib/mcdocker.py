@@ -56,14 +56,17 @@ def run_docker_mc_command(container_id=None, message=""):
     try:
         container = client.containers.get(container_id)
         output = container.exec_run(f"rcon-cli {message}")
+        if output[0] != 0:
+            # connection made but rcon not ready
+            print(f"Failed to run RCON command, exit code {output[0]}")
+            print(f"error: {output[1]}")
+            return "Something went wrong, please try again shortly"
+        # if everything is good
+        return output[1].decode()
     except Exception as e:
         print(e)
-
-    if output[0] != 0:
-        print(f"Failed to run RCON command, exit code {output[0]}")
-        print(f"error: {output[1]}")
-        return
-    return output[1].decode()
+    # exception is thrown. Docker fails to connect.
+    return "Something went wrong, please make sure your server is running."
 
 def stop_docker(container_id=None):
     """
