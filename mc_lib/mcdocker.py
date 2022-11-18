@@ -61,6 +61,7 @@ def run_docker_mc_command(container_id=None, message=""):
 
     if output[0] != 0:
         print(f"Failed to run RCON command, exit code {output[0]}")
+        print(f"error: {output[1]}")
         return
     return output[1].decode()
 

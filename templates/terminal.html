@@ -9,11 +9,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Terminal</title>
 </head>
+<!-- This is temporary. -->
+<p id="docker-id" style="display:none">{{docker_id}}</p>
 <body>
     <script>
+        let dockerId = document.getElementById('docker-id').innerText
+
         $('body').terminal(
             function(command) {
-                return fetch(`/mc_command/?command=${encodeURIComponent(command)}`)
+                return fetch(`/mc_command/?docker-id=${dockerId}&command=${encodeURIComponent(command)}`)
                     .then((response) => response.json())
                     .then((data) => {
                         return data.message;
@@ -21,6 +25,7 @@
             }, {
             greetings: 'RCON MC Terminal'
         });
+        
     </script>
 </body>
 </html>
