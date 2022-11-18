@@ -51,8 +51,10 @@ def run_docker_mc_command(container_id=None, message=""):
 
     container = client.containers.get(container_id)
     output = container.exec_run(f"rcon-cli {message}")
+    print(output)
     if output[0] != 0:
         print(f"Failed to run RCON command, exit code {output[0]}")
+        print(f"error: {output[1]}")
         return
     #print(f"{output[1].decode()}")
     return output[1].decode()

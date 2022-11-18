@@ -64,8 +64,8 @@ def start_server():
   server = Server(name="Papa Murphy's MC Server", docker_id=docker_id, max_players=20)
   db.session.add(server)
   db.session.commit()
-  s = Server.query.all()
-  return redirect(f'/terminal/{s[0].id}')
+  s = Server.query.filter_by(docker_id=docker_id).first()
+  return redirect(f'/terminal/{s.id}')
 
 @app.get('/terminal/<int:serverId>')
 def get_terminal(serverId):
