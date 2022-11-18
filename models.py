@@ -88,7 +88,6 @@ def setup_models(db: SQLAlchemy):
 ########################################################################
 
 def init(db: SQLAlchemy, dbpath: str = None, seed: bool = False):
-  print("hi")
   """
   Initializes the database at the given path `dbpath`. By default, no data is inserted
   to the database. `seed=True` will seed the database.
@@ -105,6 +104,7 @@ def models_reset(db: SQLAlchemy, seed: bool=False):
 
 def models_seed(db: SQLAlchemy):
   # TODO: Seed the tables with admin accounts.
+  print("hi")
   User, Server, Tag, SiteRole, ServerTag, ServerRolePermission, UserServerRole, ServerEvent = setup_models(db)
   siteRoleOne = SiteRole(name="admin", action="create", resource="server")
 
