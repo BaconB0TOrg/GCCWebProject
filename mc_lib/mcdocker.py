@@ -19,16 +19,20 @@ def make_server(return_container=False, name="mc-default", port=25565):
     String
         Id of the docker container that was created using this function
     """
-    try:
+    # TODO: fail if the name is already taken and return something appropriate.
+    try:    
         client = docker.from_env() 
         mc_server_container = client.containers.run(image="itzg/minecraft-server", detach=True, ports={"25565":f"{port}"}, name=f"{name}", environment=["EULA=True"])
+        if not mc_server_container:
+            raise Exception("Docker is not running!")
+        if return_container:
+            return mc_server_container
+        else:
+            return mc_server_container.id
     except Exception as e:
         print(e)
+        return None
 
-    if return_container:
-        return mc_server_container
-    else:
-        return mc_server_container.id
 
 
 def run_docker_mc_command(container_id=None, message=""):
