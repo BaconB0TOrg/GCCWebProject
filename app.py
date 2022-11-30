@@ -92,12 +92,12 @@ def post_register():
         if len(checkUsers) > 0:
           # email already exists.
           flash("That email is already in use!")
-          return redirect(url_for('get_regiser'))
+          return redirect(url_for('get_register'))
         checkUsers = User.query.filter_by(username=uname).all()
         if len(checkUsers) > 0:
           # username already exists.
           flash("That username is taken!")
-          return redirect(url_for('get_regiser'))
+          return redirect(url_for('get_register'))
         # encrypt password.
         pw = sha256_crypt.encrypt(str(form.password.data))
         user = User(password=pw, email=email, username=uname)
@@ -158,15 +158,18 @@ def post_server():
     # this calc won't work if we delete servers who no longer have docker containers from the db.
     docker_id = mcdocker.make_server(name=sf.name.data,port=25565+numPortsUsed*2)
     # TODO: Make max_players configurable by the user to some upper limit
-    server = Server(name=sf.name.data, docker_id=docker_id, owner_id=user.id, max_players=20)
+    if not docker_id:
+      flash("The server could not be created, please wait before trying again.")
+      return redirect(url_for('list_server'))
+    server = Server(name=sf.name.data, docker_id=str(docker_id), owner_id=user.id, max_players=20)
+    print(server)
     db.session.add(server)
     db.session.commit()
     s = Server.query.filter_by(docker_id=docker_id).first()
-    return redirect(f'/server/')
+    return redirect(url_for('list_server'))
   else:
-    for (k, v) in sf.errors.items():
-      flash(f"{k}: {v}")
-  return redirect('/server/')
+    flash_form_errors(sf)
+  return redirect(url_for('list_server'))
 
 @app.get('/terminal/<int:server_id>')
 def get_terminal(server_id):
@@ -174,6 +177,7 @@ def get_terminal(server_id):
     return redirect('400.html', 400)
   # TODO: Don't assume it exists, bad
   server = Server.query.filter_by(id=server_id).first()
+  print(server)
   
   return render_template('terminal.html', docker_id=server.docker_id)
 
@@ -186,8 +190,5 @@ def mc_command():
   return response
 
 with app.app_context():
-  print(dbpath)
-  #User, Server, Tag, SiteRole, ServerTag, ServerRolePermission, UserServerRole, ServerEvent = models.setup_models(db)
-  #models.init(db, dbpath=dbpath, seed=True) 
   User, Server, Tag, SiteRole, ServerTag, ServerRolePermission, UserServerRole, ServerEvent = models.setup_models(db)
   models.init(db, seed=False, tables=(User, Server, Tag, SiteRole, ServerTag, ServerRolePermission, UserServerRole, ServerEvent))
