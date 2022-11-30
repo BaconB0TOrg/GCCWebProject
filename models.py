@@ -82,7 +82,7 @@ def setup_models(db: SQLAlchemy):
     def __repr__(self):
       return str(self)
     def __str__(self):
-      return f"Server(name={self.name}, description={self.description}, owner_id={self.owner_id}, num_users={len(self.users)}, tags={self.tags})"
+      return f"Server(name={self.name}, description={self.description}, owner_id={self.owner_id}, num_users={len(self.users)}, tags={self.tags}, docker_id={self.docker_id})"
 
   class SiteRole(db.Model):
     __tablename__ = 'site_roles'
