@@ -3,9 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    {% block seo %}
     <meta name="description" content="">
     <meta name="author" content="">
-
+    {% endblock %}
+    
     <title>{% block title %}MC Server Hosting{% endblock %}</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -20,3 +22,7 @@
   {% include "flash.html" %}
   {% block content %} {% endblock %}
 </body>
+
+<footer>
+    {% block footer %} {% endblock %}
+</footer>
