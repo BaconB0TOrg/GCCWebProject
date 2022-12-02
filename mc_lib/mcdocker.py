@@ -3,8 +3,11 @@ import configparser
 import os
 
 # File configuration
-dirname = os.path.dirname(__file__)
-dir = os.path.join(dirname, f'..\\..\\')
+dir_path = os.getcwd()
+print(dir_path)
+dir_server_folder = os.path.join(dir_path, f'../servers')
+print(dir_server_folder)
+
 
 def make_server(return_container=False, name="mc-default", port=25565):
     """
@@ -27,7 +30,9 @@ def make_server(return_container=False, name="mc-default", port=25565):
     # TODO: fail if the name is already taken and return something appropriate.
     try:    
         client = docker.from_env() 
-        folder = os.path.join(dir, f'{name}')
+        folder = os.path.join(dir_server_folder, f'{name}')
+        os.mkdir(folder)
+        os.chmod(folder, mode=0o777)
         mc_server_container = client.containers.run(image="itzg/minecraft-server", detach=True, ports={"25565":f"{port}"}, name=f"{name}", environment=["EULA=True"], mounts=[docker.types.Mount(target="/data", source=f"{folder}", type="bind")])
         if not mc_server_container:
             raise Exception("Docker is not running!")
