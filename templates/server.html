@@ -1,43 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="scripts/scripts.js"></script>
-  <script>
-    //window.addEventListener('DOMContentLoaded', (event) => {
-    //  const button = document.getElementById('startServer')
-    //  button.addEventListener('click', () => {
-    //    console.log("clicked the button")
-    //    fetch('/start-server/')
-    //  })
-    //});
-  </script>
-  <title>Server</title>
-</head>
-<body>
-  {% for server in servers %}
-    <div>
-      <span>{{server.name}}</span>
-      <!-- Should go to show the server, and on that page the terminal exists -->
-      <span><a href="/terminal/{{server.id}}">Terminal</a></span>
-      <span><a href="/server/{{server.id}}/delete">Delete</a></span>
-    </div>
-  {% endfor %}
-  <br>
-  <form method="post" action="/server/">
-    {{ form.hidden_tag() }}
-    {{ form.name.label }}
-    {{ form.name() }}
-    {{ form.description.label }}
-    {{ form.description() }}
-    {{ form.tags.label }}
-    {{ form.tags() }}
-    {{ form.maxPlayers.label }}
-    {{ form.maxPlayers() }}
-    {{ form.submit() }}
-    <!-- <a id="startServer" href="/start-server/">Create a Server</a> -->
-  </form>
-</body>
-</html>
+{% extends "root.html" %}
+
+{% block title %} {{server.name}} {% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+{% for server in servers %}
+<div>
+  <span>{{server.name}}</span>
+  <span>{{server.description}}</span>
+  <!-- Should go to show the server, and on that page the terminal exists -->
+  <span><a href="{{url_for('get_terminal', server_id=server.id)}}">Terminal</a></span>
+  <span><a href="{{url_for('delete_server', server_id=server.id)}}">Delete</a></span>
+</div>
+{% endfor %}
+<br>
+<form method="post" action="/server/">
+  {{ form.hidden_tag() }}
+  {{ form.name.label }}
+  {{ form.name() }}
+  {{ form.description.label }}
+  {{ form.description() }}
+  {{ form.tags.label }}
+  {{ form.tags() }}
+  {{ form.maxPlayers.label }}
+  {{ form.maxPlayers() }}
+  {{ form.submit() }}
+  <!-- <a id="startServer" href="/start-server/">Create a Server</a> -->
+</form>
+{% endblock %}

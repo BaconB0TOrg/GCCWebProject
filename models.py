@@ -28,6 +28,10 @@ def setup_models(db: SQLAlchemy):
     description = db.Column(db.Unicode, nullable=True)
     name = db.Column(db.Unicode, nullable=False)
     server_id = db.Column(db.Integer, db.ForeignKey('servers.id'))
+    def __repr__(self):
+      return str(self)
+    def __str__(self):
+      return f"ServerEvent(name={self.name}, description={self.description}, server_id={self.server_id})"
     # Maybe no image
     # img = db.Column
 
@@ -35,6 +39,10 @@ def setup_models(db: SQLAlchemy):
     __tablename__ = 'tags'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode, nullable=False)
+    def __repr__(self):
+      return str(self)
+    def __str__(self):
+      return f"Tag(name={self.name})"
 
   ServerTag = db.Table(
     'server_tags',
@@ -54,6 +62,10 @@ def setup_models(db: SQLAlchemy):
     action = db.Column(db.Unicode, nullable=False)
     # Server description, server configuration files, etc.
     resource = db.Column(db.Unicode, nullable=False)
+    def __repr__(self):
+      return str(self)
+    def __str__(self):
+      return f"ServeRolePermission(role_name={self.role_name}, action={self.action}, resource={self.resource}, server_id={self.server_id})"
 
   class Server(db.Model):
     __tablename__ = 'servers'
@@ -62,11 +74,16 @@ def setup_models(db: SQLAlchemy):
     description = db.Column(db.Unicode, nullable=True) #  nullable!
     docker_id = db.Column(db.Unicode, nullable=False)
     max_players = db.Column(db.Integer, nullable=False)
+    port = db.Column(db.Integer, nullable=False)
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     users = db.relationship('User', secondary=UserServerRole, back_populates='servers')
     roles = db.relationship(ServerRolePermission, backref='server')
     events = db.relationship(ServerEvent, backref='sever')
     tags = db.relationship('Tag', secondary=ServerTag, backref='server')
+    def __repr__(self):
+      return str(self)
+    def __str__(self):
+      return f"Server(name={self.name}, description={self.description}, owner_id={self.owner_id}, num_users={len(self.users)}, tags={self.tags}, docker_id={self.docker_id})"
 
   class SiteRole(db.Model):
     __tablename__ = 'site_roles'
@@ -77,6 +94,10 @@ def setup_models(db: SQLAlchemy):
     # Site Dashboard, servers, etc.
     resource = db.Column(db.Unicode, nullable=False)
     users = db.relationship('User', backref='site_role')
+    def __repr__(self):
+      return str(self)
+    def __str__(self):
+      return f"SiteRole(name={self.name}, action={self.action}, resource={self.resource})"
 
   class User(db.Model):
     __tablename__ = 'users'
@@ -86,6 +107,10 @@ def setup_models(db: SQLAlchemy):
     username = db.Column(db.Unicode, nullable=False)
     site_role_id = db.Column(db.Integer, db.ForeignKey(SiteRole.id))
     servers = db.relationship('Server', secondary=UserServerRole, back_populates='users')
+    def __repr__(self):
+      return str(self)
+    def __str__(self):
+      return f"User(username={self.username}, email={self.email}, password=[REMOVED], site_role_id={self.site_role_id})"
 
   return User, Server, Tag, SiteRole, ServerTag, ServerRolePermission, UserServerRole, ServerEvent
 
