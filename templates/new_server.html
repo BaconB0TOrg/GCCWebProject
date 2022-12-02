@@ -3,11 +3,11 @@
 {% block title %} Your Servers {% endblock %}
 
 {% block head %}
-<script src="scripts/scripts.js"></script>
+<script src="/static/scripts/scripts.js"></script>
 {% endblock %}
 
 {% block content %}
-<form method="post" action="/server/">
+<form method="post" action="{{url_for('post_create_server')}}">
   {{ form.hidden_tag() }}
   {{ form.name.label }}
   {{ form.name() }}

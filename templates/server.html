@@ -1,18 +1,18 @@
 {% extends "root.html" %}
 
-{% block title %} Your Servers {% endblock %}
+{% block title %} {{server.name}} {% endblock %}
 
 {% block head %}
-<script src="/static/scripts/scripts.js"></script>
 {% endblock %}
 
 {% block content %}
 {% for server in servers %}
 <div>
   <span>{{server.name}}</span>
+  <span>{{server.description}}</span>
   <!-- Should go to show the server, and on that page the terminal exists -->
-  <span><a href="/terminal/{{server.id}}">Terminal</a></span>
-  <span><a href="/server/{{server.id}}/delete">Delete</a></span>
+  <span><a href="{{url_for('get_terminal', server_id=server.id)}}">Terminal</a></span>
+  <span><a href="{{url_for('delete_server', server_id=server.id)}}">Delete</a></span>
 </div>
 {% endfor %}
 <br>
