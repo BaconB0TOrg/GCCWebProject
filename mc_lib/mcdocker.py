@@ -37,7 +37,7 @@ def make_server(return_container=False, name="mc-default", port=25565):
     try:    
         client = docker.from_env() 
         folder = os.path.join(dir_server_folder, f'{name}')
-        os.mkdir(folder)
+        os.mkdir(folder) # Win32 systems possible ignore this but that is okay! Docker on windows automatically makes the files if they are not there
         os.chmod(folder, mode=0o777)
         mc_server_container = client.containers.run(image="itzg/minecraft-server", detach=True, ports={"25565":f"{port}"}, name=f"{name}", environment=["EULA=True"], mounts=[docker.types.Mount(target="/data", source=f"{folder}", type="bind")])
         if not mc_server_container:
