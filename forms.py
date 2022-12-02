@@ -23,3 +23,7 @@ class ServerForm(FlaskForm):
     # Should not be a field at all. Handled by server based on who is making the server.
     # OwnerID = IntegerField("Owner ID", validators=[Optional()]) #, validators=[InputRequired()]
     submit = SubmitField("Submit")
+
+class ChangeEmailForm(FlaskForm):
+    email = EmailField("New Email", validators=[InputRequired(), Email()])
+    submit = SubmitField("Change email")

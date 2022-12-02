@@ -3,17 +3,17 @@
 {% block title %} Your Servers {% endblock %}
 
 {% block head %}
-<script src="scripts/scripts.js"></script>
+<script src="/static/scripts/scripts.js"></script>
 {% endblock %}
 
 {% block content %}
 {% for server in servers %}
-  <div>
-    <span>{{server.name}}</span>
-    <!-- Should go to show the server, and on that page the terminal exists -->
-    <span><a href="/terminal/{{server.id}}">Terminal</a></span>
-    <span><a href="/server/{{server.id}}/delete">Delete</a></span>
-  </div>
+<div>
+  <span>{{server.name}}</span>
+  <!-- Should go to show the server, and on that page the terminal exists -->
+  <span><a href="/terminal/{{server.id}}">Terminal</a></span>
+  <span><a href="/server/{{server.id}}/delete">Delete</a></span>
+</div>
 {% endfor %}
 <br>
 <form method="post" action="/server/">
