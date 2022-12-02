@@ -60,6 +60,7 @@ def get_login():
 def post_login():
   # Don't allow logged in users to nav here
   if session.get('logged-in'):
+    print('[INFO] User tried to login while already logged in!')
     flash('You are not allowed to view that page.')
     return redirect(url_for('welcome'))
 
@@ -70,12 +71,13 @@ def post_login():
     user = User.query.filter_by(username=username).first()
 
     if user == None:
+      print(f'[WARN] Failed to login: User {username} does not exist.')
       flash('Incorrect username and/or password combination!')
       return redirect(url_for('get_login'))
-    print(user.password)
 
     valid = sha256_crypt.verify(str(form.password.data), user.password)
     if not valid:
+      print(f'[WARN] Failed to login: Incorrect password for user {username}.')
       flash('Incorrect username and/or password combination!')
       return redirect(url_for('get_login'))
 
@@ -83,21 +85,23 @@ def post_login():
     session['user-email'] = user.email
     session['user-id'] = user.id
 
-    flash(f'Welcome back {user.username}')
+    print(f'[INFO] User {user.username} logged in.')
+    flash(f'Welcome back, {user.username}!')
     return redirect(url_for('welcome'))
   else:
+    print('[INFO] Failed to login user: Invalid form.')
     flash_form_errors(form)
     return redirect(url_for('get_login'))
 
 @app.route('/log-out/')
 def get_log_out():
   if request.method != 'GET':
-    print(f"User requested {url_for('get_log_out')} with a {request.method} request. Only GET is allowed")
+    print(f"[WARN] User tried to {request.method} to {url_for('get_log_out')}. Only GET is allowed")
     flash("You can't do that!")
     return redirect(url_for('welcome'))
   # if you're not logged in, wut
   if not session.get('logged-in'):
-    print("Anonymous user tried to log out.")
+    print("[INFO] Anonymous user tried to log out.")
     flash("You're already logged out!")
     return redirect(url_for('welcome'))
   session['logged-in'] = False
@@ -111,6 +115,7 @@ def get_log_out():
 def get_account():
   # if you're not logged in, you can't be here.
   if not session.get('logged-in'):
+    print(f'[WARN] Failed to GET {url_for("get_account")}: Anonymous user.')
     flash('You have to be logged in to see that page.')
     return redirect(url_for('get_login'))
 
@@ -118,10 +123,12 @@ def get_account():
   user = User.query.filter_by(id=user_id).first()
   # if user doesn't exist
   if not user:
+    print(f"[WARN] Failed to GET {url_for('get_account')}: user {user_id} doesn't exist")
     flash('You have to be logged in to see that page.')
     return redirect(url_for('get_login'))
   
   form = ChangeEmailForm()
+  print(f"[INFO] Successfully accessed {url_for('get_account')} for user {user_id}")
   return render_template('account.html', user=user, form=form)
 
 @app.post('/account/change-email/')
@@ -229,7 +236,6 @@ def post_create_server():
       flash('The server could not be created, please wait before trying again.')
       return redirect(url_for('get_create_server'))
     server = Server(name=form.name.data, docker_id=str(docker_id), owner_id=user.id, max_players=int(form.maxPlayers.data), port=port)
-    print(server)
     db.session.add(server)
     db.session.commit()
     s = Server.query.filter_by(docker_id=docker_id).first()
