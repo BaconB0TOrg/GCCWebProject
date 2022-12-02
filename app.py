@@ -50,14 +50,17 @@ def welcome():
 
 @app.get('/login/')
 def get_login():
-    form = LoginForm()
-    return render_template('login.html', form=form)
+  if session.get('logged-in'):
+    flash("You're already logged in!")
+    return redirect(url_for('welcome'))
+  form = LoginForm()
+  return render_template('login.html', form=form)
 
 @app.post('/login/')
 def post_login():
   # Don't allow logged in users to nav here
   if session.get('logged-in'):
-    flash('You are not allowed to view that page')
+    flash('You are not allowed to view that page.')
     return redirect(url_for('welcome'))
 
   form = LoginForm()
@@ -95,7 +98,7 @@ def get_log_out():
   # if you're not logged in, wut
   if not session.get('logged-in'):
     print("Anonymous user tried to log out.")
-    flash("You can't do that!")
+    flash("You're already logged out!")
     return redirect(url_for('welcome'))
   session['logged-in'] = False
   session['user-email'] = None
@@ -107,16 +110,16 @@ def get_log_out():
 @app.get('/account/')
 def get_account():
   # if you're not logged in, you can't be here.
-  if not session.get('logged-in') and session.get('user-id'):
-    flash('You are not allowed to view that page')
-    return redirect(url_for('welcome'))
+  if not session.get('logged-in'):
+    flash('You have to be logged in to see that page.')
+    return redirect(url_for('get_login'))
 
   user_id = session['user-id']
   user = User.query.filter_by(id=user_id).first()
   # if user doesn't exist
   if not user:
-    flash('You are not allowed to view that page')
-    return redirect(url_for('welcome'))
+    flash('You have to be logged in to see that page.')
+    return redirect(url_for('get_login'))
   
   form = ChangeEmailForm()
   return render_template('account.html', user=user, form=form)
@@ -125,7 +128,7 @@ def get_account():
 def change_email():
   form = ChangeEmailForm()
 
-  if session.get('logged-in') and session.get('user-id') and form.validate_on_submit():
+  if session.get('logged-in') and form.validate_on_submit():
     # valid form. Check if user exists
     user_id = session['user-id']
     user = User.query.filter_by(id=user_id).first()
@@ -185,67 +188,101 @@ def post_register():
         flash_form_errors(form)
         return redirect(url_for('get_register'))
 
-@app.get('/server/<int:server_id>/')
-def show_server(server_id):
-  server = Server.query.filter_by(id=server_id).first()
-  return render_template('server.html', server=server)
-
-@app.get('/server/<int:server_id>/delete')
-def delete_server(server_id):
-  server = Server.query.filter_by(id=server_id).first()
-  mcdocker.remove_docker(container_id=server.docker_id)
-  db.session.delete(server)
-  db.session.commit()
-  return redirect('/server/')
-
 @app.get('/server/')
 def list_server():
-  sf = ServerForm()
-  # do something to make sure users can't edit their token
-  # and be logged in to someone else's account.
-  loggedIn=session.get('logged-in')
-  if not loggedIn:
+  if not session.get('logged-in'):
     flash('You have to be logged in to access that page!')
-    return redirect('/login/')
+    return redirect(url_for('get_login'))
   
   email=session.get('user-email')
   user = User.query.filter_by(email=email).first()
   if user == None:
+    print("[ERROR]: logged-in token was true but no valid user-email was saved in the session!")
     flash('You have to be logged in to access that page!')
-    return redirect('/login/')
-  servers = Server.query.filter_by(owner_id=user.id).all()
-  return render_template('server.html', form=sf, servers=servers)
+    return redirect(url_for('get_login'))
+  servers = Server.query.all()
+  # servers = Server.query.filter_by(owner_id=user.id).all()
+  return render_template('server_list.html', servers=servers)
 
-@app.post('/server/')
-def post_server():
-  sf = ServerForm()
-  if sf.validate_on_submit():
-    numPortsUsed = Server.query.count()
-    email = session.get('user-email')
-    user = User.query.filter_by(email=email).first()
+@app.get('/server/create/')
+def get_create_server():
+  if not (session.get('logged-in') and session.get('user-id')):
+    flash("You need to be logged in to see that page!")
+    return redirect(url_for('get_login'))
+  form = ServerForm()
+  return render_template('new_server.html', form=form)
+
+@app.post('/server/create/')
+def post_create_server():
+  if not session.get('logged-in') and not session.get('user-id'):
+    flash("You can't do that!")
+    return redirect(url_for('get_login'))
+  form = ServerForm()
+  if form.validate_on_submit():
+    port = 25565+Server.query.count()*2
+    user_id = session.get('user-id')
+    user = User.query.filter_by(id=user_id).first()
     # this calc won't work if we delete servers who no longer have docker containers from the db.
-    docker_id = mcdocker.make_server(name=sf.name.data,port=25565+numPortsUsed*2)
+    docker_id = mcdocker.make_server(name=form.name.data,port=port)
     # TODO: Make max_players configurable by the user to some upper limit
     if not docker_id:
       flash('The server could not be created, please wait before trying again.')
-      return redirect(url_for('list_server'))
-    server = Server(name=sf.name.data, docker_id=str(docker_id), owner_id=user.id, max_players=20)
+      return redirect(url_for('get_create_server'))
+    server = Server(name=form.name.data, docker_id=str(docker_id), owner_id=user.id, max_players=int(form.maxPlayers.data), port=port)
     print(server)
     db.session.add(server)
     db.session.commit()
     s = Server.query.filter_by(docker_id=docker_id).first()
     return redirect(url_for('list_server'))
   else:
-    flash_form_errors(sf)
-  return redirect(url_for('list_server'))
+    flash_form_errors(form)
+    return redirect(url_for('get_create_server'))
 
-@app.get('/terminal/<int:server_id>')
+@app.get('/server/<int:server_id>/')
+def show_server(server_id):
+  server = Server.query.filter_by(id=server_id).first()
+  if not server:
+    if not session.get('logged-in'):
+      flash("That server doesn't exist! Why not create one? Login to start!")
+      return redirect(url_for('get_login'))
+    else:
+      flash("That server doesn't exist! Why not create one?")
+      return redirect(url_for('get_create_server'))
+  return render_template('server.html', server=server)
+
+@app.get('/server/<int:server_id>/delete')
+def delete_server(server_id):
+  if not session.get('logged-in'):
+    print(f'Anonymous user tried to delete server {server_id}')
+    flash("You don't have permission to do that!")
+    return redirect(url_for('welcome'))
+  
+  server = Server.query.filter_by(id=server_id).first()
+  if session.get('user-id') == server.owner_id:
+    mcdocker.remove_docker(container_id=server.docker_id)
+    db.session.delete(server)
+    db.session.commit()
+    flash('Server succesfully deleted!')
+    return redirect(url_for('list_server'))
+  else:
+    print(f'[WARN] User {session.get("user-id")} tried to delete server {server_id}')
+    flash("You don't have permission to do that!")
+    return redirect(url_for('list_server'))
+
+@app.get('/server/<int:server_id>/terminal/')
 def get_terminal(server_id):
   if server_id == None:
     return redirect('400.html', 400)
-  # TODO: Don't assume it exists, bad
   server = Server.query.filter_by(id=server_id).first()
-  print(server)
+  if not server:
+    print(f'Failed to access server {server_id}: Does not exist')
+    flash("You don't have permission to do that!")  
+    return redirect(url_for('welcome'))
+  # TODO: Check userServerRole for permission to access Terminal
+  if server.owner_id != int(session.get('user-id')):
+    print(f'User {session.get("user-id")} failed to access server {server_id}: Not the owner')
+    flash("You don't have permission to do that!") 
+    return redirect(url_for('welcome'))
   
   return render_template('terminal.html', docker_id=server.docker_id)
 
