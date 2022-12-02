@@ -1,5 +1,10 @@
 import docker 
+import configparser
+import os
 
+# File configuration
+dirname = os.path.dirname(__file__)
+dir = os.path.join(dirname, f'..\\..\\')
 
 def make_server(return_container=False, name="mc-default", port=25565):
     """
@@ -21,14 +26,15 @@ def make_server(return_container=False, name="mc-default", port=25565):
     """
     try:
         client = docker.from_env() 
-        mc_server_container = client.containers.run(image="itzg/minecraft-server", detach=True, ports={"25565":f"{port}"}, name=f"{name}", environment=["EULA=True"])
+        folder = os.path.join(dir, f'{name}')
+        mc_server_container = client.containers.run(image="itzg/minecraft-server", detach=True, ports={"25565":f"{port}"}, name=f"{name}", environment=["EULA=True"], mounts=[docker.types.Mount(target="/data", source=f"{folder}", type="bind")])
     except Exception as e:
         print(e)
 
     if return_container:
         return mc_server_container
     else:
-        return mc_server_container.id
+        return mc_server_container.id_attribute
 
 
 def run_docker_mc_command(container_id=None, message=""):
@@ -135,14 +141,43 @@ def remove_docker(container_id=None):
     except Exception as e:
         print(e)
 
-    
+def get_server_world(container_id = None):
 
+    if container_id is None:
+        return
+    client = docker.from_env()
+
+    try:
+        container = client.containers.get(container_id)
+        # Get the requested containers_id tar file
+        tar_archive_world = container.get_archive("/data/world")
+        # Delete the old server
+        #with open("test.tar", "wb") as f: # Used for testing purposes
+        #   for x in tar_archive_world[0]:
+        #       f.write(x)
+        
+        #f.close()
+
+    except Exception as e:
+        print(e)
+
+def update_server_properties(container_id=None):
+    if container_id is None:
+        return
+    client = docker.from_env()
+
+
+    try:
+        container = client.get_container(container_id)
+    except Exception as e:
+        print(e)
 
 if __name__ == "__main__":
-    #make_server()
+    make_server()
     #make_server(name="mc-default-2", port=25567)
     #run_docker_mc_command("mc", "/banlist players")
     #stop_docker("mc")  
     #start_docker("mc")  
-    remove_docker("mc")
+    #remove_docker("mc")
+    #update_server_properties(container_id="mc-default", server_name="lul", max_players=10)
     pass
