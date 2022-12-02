@@ -1,11 +1,17 @@
 import docker 
 import configparser
 import os
+import sys
 
 # File configuration
 dir_path = os.getcwd()
 print(dir_path)
-dir_server_folder = os.path.join(dir_path, f'../servers')
+dir_server_folder = os.path.join(dir_path, '../servers')
+
+if sys.platform == "win32":
+    # need to replace all '/' with all '\\'
+    dir_server_folder = dir_server_folder.replace("/", "\\")
+
 print(dir_server_folder)
 
 
