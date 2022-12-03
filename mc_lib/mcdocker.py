@@ -65,7 +65,7 @@ def update_server_properties(container_id="mc-default", key="", value=None):
         return
     client = docker.from_env()
     container = client.containers.get(container_id)
-    
+
     # Get the server properties from the container
     tar_archive_server_properties = container.get_archive("/data/server.properties", encode_stream=False)
     
@@ -74,51 +74,49 @@ def update_server_properties(container_id="mc-default", key="", value=None):
     with open(tar_file, "wb") as f: # Used for testing purposes
        for x in tar_archive_server_properties[0]:
            f.write(x)
-        
     f.close()
 
     if tarfile.is_tarfile(f.name):
-        print("Succesfully revieced server tar archive")
+        print("Succesfully recieved server tar archive")
     else:
         print("Failed to find server properties tar archive")
         return
     
-
     # Un tar it
     server_tar_file = tarfile.TarFile(name=tar_file)
     buffer = server_tar_file.extractfile('server.properties')
-
-    # Removing the tar archieve cuz we no longer need it
-    os.remove(tar_file)
     
     # Editing the server.properties file
     server_properties_content = buffer.read().decode()
     string_buffer = io.StringIO(server_properties_content)
-    
+    server_tar_file.close() # We have the buffer now and now we can close the tarfile connection
+    os.remove(tar_file)
+
     # This is needed for the configparser, it convert it to a more .ini type config system
     string_content = ""    
-    if string_buffer.readline() == "[root]\n":
+    if string_buffer.readline() == "[root]\r\n":
         string_content = server_properties_content
     else:
-        string_content = "[root]\n" + server_properties_content
+        string_content = "[root]\r\n" + server_properties_content
 
-    
+    print(string_content.encode())
+
     configparser = ConfigParser()
     configparser.read_string(string_content)
 
     # hardcoded change player to 10 
-    configparser["root"]["max-players"] = "10"
+    configparser["root"][key] = value
     
     with open("server.properties", "w") as config_file:
         configparser.write(config_file)
+    
     
     # write the new server.properties tar archieve that is going to be sent to the docker container
     tar_file_new = tarfile.open(f"server_properties_{container_id}.tar", "w")
     tar_file_new.add(config_file.name)
     tar_file_new.close()
-    
-    # No longer need this
-    os.remove(config_file.name)
+
+    os.remove("server.properties")
 
     # get the archive byte info
     archive_file_to_send = open(tar_file, "rb")
@@ -127,9 +125,8 @@ def update_server_properties(container_id="mc-default", key="", value=None):
     
     container.put_archive("/data", data)
     
-    # Clean up
     os.remove(tar_file)
-    
+
     return
 
 def run_docker_mc_command(container_id=None, message=""):
@@ -263,7 +260,8 @@ if __name__ == "__main__":
     #run_docker_mc_command("mc", "/banlist players")
     #stop_docker("mc")  
     #start_docker("mc")  
-    #remove_docker("mc")
-    update_server_properties(key="max-players", value="50")
-    #update_server_properties(key="difficulty", value="hard")
+    #remove_docker("mc") 
+    update_server_properties(key="max-players", value="50") 
+    update_server_properties(key="motd", value="Test MOTD")
+    update_server_properties(key="pvp", value="False")
     pass
