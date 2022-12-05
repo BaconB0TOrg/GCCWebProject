@@ -67,6 +67,7 @@ def setup_models(db: SQLAlchemy):
     def __str__(self):
       return f"ServeRolePermission(role_name={self.role_name}, action={self.action}, resource={self.resource}, server_id={self.server_id})"
 
+# Make a server properties model and store those there with a reference to the server object
   class Server(db.Model):
     __tablename__ = 'servers'
     id = db.Column(db.Integer, primary_key=True)
