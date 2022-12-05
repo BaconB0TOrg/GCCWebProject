@@ -52,6 +52,18 @@ def make_server(return_container=False, name="mc-default", port=25565, max_playe
         if not mc_server_container:
             raise Exception("Docker is not running!")
             
+        attached = mc_server_container.attach(stream=True, stdout=True, stderr=False, logs=False)
+        print(attached)
+
+        # Looking for a certain string to signal that the mc_server has started
+        for console_output in attached:
+            print(console_output)
+            if "RCON running on" in console_output.decode():
+                attached.close()
+                break
+
+        update_server_properties(container_id="mc-default", updated_properties={"difficulty": "hard", "max-players": "100", "motd":"ITS ALIVE"}, init_properties=True)
+
         if return_container:
             return mc_server_container
         else:
@@ -60,7 +72,7 @@ def make_server(return_container=False, name="mc-default", port=25565, max_playe
         print(e)
         return None
 
-def update_server_properties(container_id="mc-default", key="", value=None):
+def update_server_properties(container_id="mc-default", updated_properties={}, init_properties=False):
     if container_id == None:
         return
     client = docker.from_env()
@@ -94,18 +106,17 @@ def update_server_properties(container_id="mc-default", key="", value=None):
 
     # This is needed for the configparser, it converts it to a more .ini type config system
     string_content = ""    
-    if string_buffer.readline() == "[root]\r\n":
+    if not init_properties:
         string_content = server_properties_content
     else:
         string_content = "[root]\r\n" + server_properties_content
 
-    print(string_content.encode())
 
     configparser = ConfigParser()
     configparser.read_string(string_content)
 
-    # hardcoded change player to 10 
-    configparser["root"][key] = value
+    for key in updated_properties:
+        configparser["root"][key] = updated_properties[key]
     
     with open("server.properties", "w") as config_file:
         configparser.write(config_file)
@@ -126,6 +137,10 @@ def update_server_properties(container_id="mc-default", key="", value=None):
     container.put_archive("/data", data)
     
     os.remove(tar_file)
+
+    container.restart()
+    
+    print("[INFO] Succesfully updated the server properties\n")
 
     return
 
@@ -255,13 +270,13 @@ def get_server_world(container_id = None):
 
 
 if __name__ == "__main__":
-    #make_server()
+    make_server()
     #make_server(name="mc-default-2", port=25567)
     #run_docker_mc_command("mc", "/banlist players")
     #stop_docker("mc")  
     #start_docker("mc")  
     #remove_docker("mc") 
-    update_server_properties(key="max-players", value="50") 
-    update_server_properties(key="motd", value="Test MOTD")
-    update_server_properties(key="pvp", value="False")
+    #update_server_properties(key="max-players", value="50") 
+    #update_server_properties(key="motd", value="Test MOTD")
+    #update_server_properties(key="pvp", value="False")
     pass
