@@ -51,7 +51,25 @@ def make_server(return_container=False, name="mc-default", port=25565, max_playe
         print(e)
         return None
 
-def update_server_properties(container_id="mc-default", updated_properties={}, init_properties=False):
+def update_server_properties(container_id="mc-default", updated_properties={}, init_properties=False):"""
+    Function to update an existing minecraft server.
+
+    Parameters
+    ----------
+    container_id : String
+        Default to 'mc-default', name of the docker container
+    updated_properties: Dict
+        Key value pairs of all the settings wished to be updated
+    init_properties: False
+        DO NOT USED THIS, ONLY NEEDS TO BE USED FROM THE MAKE SERVER CALL
+        Where or not to properly config the server.properties file to be used with config parser
+
+    Returns
+    -------
+    String
+        Id of the docker container that was created using this function
+    """
+
     if container_id == None:
         return
     client = docker.from_env()
@@ -228,6 +246,14 @@ def remove_docker(container_id=None):
         print(e)
 
 def get_server_world(container_id = None):
+    """
+    Function to collect the mc servers world files
+
+    Parameters
+    ----------
+    container_id: String
+    Default to None, used to specify the which containers world to grab
+    """
 
     if container_id is None:
         return
