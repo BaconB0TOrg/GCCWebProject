@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, EmailField, PasswordField, SubmitField, FileField, TextAreaField, SelectField, IntegerField
-from wtforms.validators import InputRequired, EqualTo, Email, Length, Optional
+from wtforms.validators import InputRequired, EqualTo, Email, Length, Optional, NumberRange
 
 class LoginForm(FlaskForm):
     username = StringField("Name", validators=[InputRequired()])
@@ -16,12 +16,55 @@ class RegisterForm(FlaskForm):
     submit = SubmitField("Submit")
     
 class ServerForm(FlaskForm):
+    server_properties = [
+        "level-seed",
+        "gamemode",
+        "enable-command-block",
+        "generator-settings",
+        "level-name",
+        "motd",
+        "pvp",
+        "generate-structures",
+        "max-chained-neighbor-updates",
+        "difficulty",
+        "require-resource-pack",
+        "max-players",
+        "online-mode",
+        "enable-status",
+        "allow-flight",
+        "view-distance",
+        "resource-pack-prompt",
+        "allow-nether",
+        "sync-chunk-writes",
+        "op-permission-level",
+        "hide-online-players",
+        "resource-pack",
+        "entity-broadcast-range-percentage",
+        "simulation-distance",
+        "player-idle-timeout",
+        "force-gamemode",
+        "rate-limit",
+        "hardcore",
+        "white-list",
+        "broadcast-console-to-ops",
+        "spawn-npcs",
+        "previews-chat",
+        "spawn-animals",
+        "function-permission-level",
+        "level-type",
+        "text-filtering-config",
+        "spawn-monsters",
+        "enforce-whitelist",
+        "spawn-protection",
+        "resource-pack-sha1",
+        "max-world-size"
+    ]
     name = StringField("Name", validators=[InputRequired()])
     description = StringField("Description", validators=[Optional()])
     tags = SelectField("Tags", choices=[('SMP', 'SMP')], validators=[Optional()])
-    maxPlayers = IntegerField("Maximum Players", validators=[InputRequired()])
+    maxPlayers = IntegerField("Maximum Players", validators=[InputRequired(), NumberRange(2, 50)])
+    gamemode = SelectField("Gamemode", choices=[('Survival', 'survival'), ('Creative', 'creative')], validators=[InputRequired()])
     # Should not be a field at all. Handled by server based on who is making the server.
-    # OwnerID = IntegerField("Owner ID", validators=[Optional()]) #, validators=[InputRequired()]
     submit = SubmitField("Submit")
 
 class ChangeEmailForm(FlaskForm):
