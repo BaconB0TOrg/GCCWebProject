@@ -5,26 +5,6 @@ import tarfile
 import io
 from configparser import ConfigParser
 
-# File configuration
-dir_path = os.getcwd()
-dir_server_folder = os.path.join(dir_path, '../servers')
-
-if sys.platform == "win32":
-    # need to replace all '/' with all '\\'
-    dir_server_folder = dir_server_folder.replace("/", "\\")
-
-def get_server_bind_folder(name="mc-default"):
-    dir_server_bind = ""
-    if sys.platform == "win32":
-        dir_server_bind = dir_server_folder + f"\\{name}"
-    else:
-        dir_server_bind = dir_server_folder + f"/{name}"
-
-    if os.path.exists(dir_server_bind):
-        return dir_server_bind
-    print("Failed to find server bind! Make sure file exists")
-    return
-
 def make_server(return_container=False, name="mc-default", port=25565, max_players=20):
     """
     Function to start a docker minecraft server.
@@ -46,7 +26,6 @@ def make_server(return_container=False, name="mc-default", port=25565, max_playe
     # TODO: fail if the name is already taken and return something appropriate.
     try:    
         client = docker.from_env() 
-        folder = os.path.join(dir_server_folder, f'{name}')
         mc_server_container = client.containers.run(image="itzg/minecraft-server", detach=True, ports={"25565":f"{port}"}, name=f"{name}", environment=["EULA=True"])
 
         if not mc_server_container:
