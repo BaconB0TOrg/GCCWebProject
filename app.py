@@ -4,6 +4,7 @@ from flask import Flask, escape
 from flask import render_template, url_for, redirect, flash, jsonify, request, session
 from flask_sqlalchemy import SQLAlchemy
 from passlib.hash import sha256_crypt
+import time
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 dbpath = os.path.join(scriptdir, 'server_hosting.sqlite3')
@@ -223,25 +224,45 @@ def get_create_server():
 @app.post('/server/create/')
 def post_create_server():
   if not session.get('logged-in'):
-    print(f'Anonymous user tried to {request.method}')
+    print(f'[INFO] Anonymous user tried to {request.method} {url_for("post_create_server")}')
     flash("You must be logged in to do that!")
     return redirect(url_for('get_login'))
+
   form = ServerForm()
   if form.validate_on_submit():
     user_id = session.get('user-id')
     user = User.query.filter_by(id=user_id).first()
     if not user:
-      print(f"Failed to create server: User {user_id} does not exist")
+      print(f"[ERROR] Failed to create server: User {user_id} does not exist")
       flash("You don't have permission to do that.")
       return redirect(url_for('get_login'))
-      
-    port = 25565+Server.query.count()*2
+
     # this calc won't work if we delete servers who no longer have docker containers from the db.
-    docker_id = mcdocker.make_server(name=form.name.data,port=port)
-    # TODO: Make max_players configurable by the user to some upper limit
+    port = 25565+Server.query.count()*2
+    # TODO: Pass properties here rather than force a separate call.
+    docker_id = mcdocker.make_server(name=form.name.data,port=port, max_players=int(form.maxPlayers.data))
+    
     if not docker_id:
+      print("[CRITICAL] Server could not be created!")
       flash('The server could not be created, please wait before trying again.')
       return redirect(url_for('get_create_server'))
+    
+    mcdocker.update_server_properties(docker_id, "gamemode", str(form.gamemode.data))
+    mcdocker.update_server_properties(docker_id, "max-players", str(form.maxPlayers.data))
+
+    # done=False
+    # while(not done):
+    #   try:
+    #     mcdocker.update_server_properties(docker_id, "gamemode", str(form.gamemode.data))
+    #     mcdocker.update_server_properties(docker_id, "max-players", str(form.maxPlayers.data))
+    #     done=True
+    #   except Exception as e:
+    #     print("[CRITICAL] Server properties could not be updated!")
+    #     # flash("The server's properties could not be updated, but the server was created! Please wait before trying again.")
+    #     # return redirect(url_for('get_create_server'))
+    #     print(e)
+    #     time.sleep(5)
+
     server = Server(name=form.name.data, description=str(form.description.data), docker_id=str(docker_id), owner_id=user.id, max_players=int(form.maxPlayers.data), port=port)
     db.session.add(server)
     db.session.commit()

@@ -77,7 +77,7 @@ def update_server_properties(container_id="mc-default", key="", value=None):
     f.close()
 
     if tarfile.is_tarfile(f.name):
-        print("Succesfully recieved server tar archive")
+        print("[INFO] Succesfully recieved server tar archive")
     else:
         print("Failed to find server properties tar archive")
         return
@@ -92,7 +92,7 @@ def update_server_properties(container_id="mc-default", key="", value=None):
     server_tar_file.close() # We have the buffer now and now we can close the tarfile connection
     os.remove(tar_file)
 
-    # This is needed for the configparser, it convert it to a more .ini type config system
+    # This is needed for the configparser, it converts it to a more .ini type config system
     string_content = ""    
     if string_buffer.readline() == "[root]\r\n":
         string_content = server_properties_content
