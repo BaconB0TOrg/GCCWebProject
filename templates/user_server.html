@@ -17,6 +17,6 @@
   {% for tag in server.tags %}
   <span>{{tag}}</span>
   {% endfor %}
-  <button onClick="window.location.reload();">Edit</button>
+  <button onClick="edit=True; window.location.reload();">Edit</button>
 </div>
 {% endblock %}
