@@ -41,7 +41,7 @@ def make_server(return_container=False, name="mc-default", port=25565, max_playe
                 attached.close()
                 break
 
-        update_server_properties(container_id="mc-default", updated_properties={"difficulty": "hard", "max-players": "100", "motd":"ITS ALIVE"}, init_properties=True)
+        update_server_properties(container_id=name, updated_properties={"difficulty": "hard", "max-players": "100", "motd":"ITS ALIVE"}, init_properties=True)
 
         if return_container:
             return mc_server_container
