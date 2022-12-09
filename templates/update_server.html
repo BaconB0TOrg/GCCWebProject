@@ -5,6 +5,7 @@
 {% block content %}
 <div>To select multiple tags, hold ctrl and click to select or deselect the tags you want.</div>
 <form action="{{url_for('post_update_server', server_id=form.id.data)}}" method="post">
+  {{ form.hidden_tag() }}
   {{ form.name.label }}
   {{ form.name() }}
   {{ form.description.label }}

@@ -10,10 +10,14 @@
   <h1>{{server.name}}</h1>
   <p>Description {{server.description}}</p>
   <h3>Max Players: {{server.max_players}}</h3>
-  <h3>Tags:</h3>
-  {% for tag in server.tags %}
-  <span>{{tag}}</span>
-  {% endfor %}
+  <div class='d-flex' id="tags">
+    <h3>Tags:</h3>
+    <ul>
+      {% for tag in server.tags %}
+      <span class="list-inline-item badge rounded-pill text-bg-info">{{tag.name}}</span>
+      {% endfor %}
+    </ul>
+  </div>
   <a href="/"><button class="btn btn-primary btn-lg">Home</button></a>
   <a href="{{url_for('get_update_server', server_id=server.id)}}" class="btn btn-primary btn-lg">Update Server</a>
 </div>
