@@ -264,23 +264,6 @@ def post_create_server():
       print("[CRITICAL] Server could not be created!")
       flash('The server could not be created, please wait before trying again.')
       return redirect(url_for('get_create_server'))
-    
-    #mcdocker.update_server_properties(docker_id, "gamemode", str(form.gamemode.data))
-    #mcdocker.update_server_properties(docker_id, "max-players", str(form.maxPlayers.data))
-    #mcdocker.update_server_properties(container_id=docker_id, updated_properties={"gamemode":str(form.gamemode.data)})
-
-    # done=False
-    # while(not done):
-    #   try:
-    #     mcdocker.update_server_properties(docker_id, "gamemode", str(form.gamemode.data))
-    #     mcdocker.update_server_properties(docker_id, "max-players", str(form.maxPlayers.data))
-    #     done=True
-    #   except Exception as e:
-    #     print("[CRITICAL] Server properties could not be updated!")
-    #     # flash("The server's properties could not be updated, but the server was created! Please wait before trying again.")
-    #     # return redirect(url_for('get_create_server'))
-    #     print(e)
-    #     time.sleep(5)
 
     server = Server(name=form.name.data, description=str(form.description.data), docker_id=str(docker_id), owner_id=user.id, max_players=int(form.maxPlayers.data), port=port)
     db.session.add(server)
