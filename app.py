@@ -286,6 +286,8 @@ def show_server(server_id):
     else:
       flash("That server doesn't exist! Why not create one?")
       return redirect(url_for('get_create_server'))
+  if session.get('user-id') == server.owner_id:
+    return render_template('user_server.html', server=server, edit=False)
   return render_template('server.html', server=server)
 
 @app.get('/server/<int:server_id>/update/')
