@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -21,17 +22,20 @@
 <body>
   {% include "flash.html" %}
   <nav>
-    <a class='' href="/">Home</a>
-    <a class='' href="/login/">Login</a>
-    <a class='' href="/register/">Sign up</a>
-    <a class='' href="/log-out/">Log Out</a>
-    <a class='' href="/server/">Servers</a>
-    <a class='' href="/server/create">Make a new Server</a>
-
+    <div class="m-1 p-1">
+      <a class='btn btn-secondary' role="button" href="/">Home</a>
+      <a class='btn btn-secondary' role="button" href="/login/">Login</a>
+      <a class='btn btn-secondary' role="button" href="/register/">Sign up</a>
+      <a class='btn btn-secondary' role="button" href="/log-out/">Log Out</a>
+      <a class='btn btn-secondary' role="button" href="/server/">Servers</a>
+      <a class='btn btn-secondary' role="button" href="/server/create">Make a new Server</a>
+    </div>
   </nav>
+  <div class="m-4">
   {% block content %} {% endblock %}
 </body>
 
 <footer>
     {% block footer %} {% endblock %}
 </footer>
+</div>
