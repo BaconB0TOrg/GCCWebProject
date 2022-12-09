@@ -9,7 +9,7 @@ import time
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 dbpath = os.path.join(scriptdir, 'server_hosting.sqlite3')
 
-from forms import LoginForm, RegisterForm, ServerForm, ChangeEmailForm
+from forms import LoginForm, RegisterForm, ServerForm, ChangeEmailForm, ServerUpdateForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'somesecretkeythatislongenoughcool'
@@ -218,8 +218,8 @@ def list_server():
   email=session.get('user-email')
   user = User.query.filter_by(email=email).first()
   if user == None:
-    print("[ERROR]: logged-in token was true but no valid user-email was saved in the session!")
-    flash('You have to be logged in to access that page!')
+    print("[ERROR]: logged-in token was true but no valid email was saved in the session!")
+    flash('Uh oh, your account is unavailable.')
     return redirect(url_for('get_login'))
   servers = Server.query.all()
   # servers = Server.query.filter_by(owner_id=user.id).all()
@@ -231,6 +231,9 @@ def get_create_server():
     flash("You need to be logged in to see that page!")
     return redirect(url_for('get_login'))
   form = ServerForm()
+  tags = Tag.query.all()
+
+  form.tags.choices = [(t.id, t.name) for t in tags]
   return render_template('new_server.html', form=form)
 
 @app.post('/server/create/')
@@ -240,7 +243,10 @@ def post_create_server():
     flash("You must be logged in to do that!")
     return redirect(url_for('get_login'))
 
+  tags = Tag.query.all()
   form = ServerForm()
+  form.tags.choices = [(t.id, t.name) for t in tags]
+
   if form.validate_on_submit():
     user_id = session.get('user-id')
     user = User.query.filter_by(id=user_id).first()
@@ -258,25 +264,10 @@ def post_create_server():
       print("[CRITICAL] Server could not be created!")
       flash('The server could not be created, please wait before trying again.')
       return redirect(url_for('get_create_server'))
-    
-    #mcdocker.update_server_properties(docker_id, "gamemode", str(form.gamemode.data))
-    #mcdocker.update_server_properties(docker_id, "max-players", str(form.maxPlayers.data))
-    #mcdocker.update_server_properties(container_id=docker_id, updated_properties={"gamemode":str(form.gamemode.data)})
 
-    # done=False
-    # while(not done):
-    #   try:
-    #     mcdocker.update_server_properties(docker_id, "gamemode", str(form.gamemode.data))
-    #     mcdocker.update_server_properties(docker_id, "max-players", str(form.maxPlayers.data))
-    #     done=True
-    #   except Exception as e:
-    #     print("[CRITICAL] Server properties could not be updated!")
-    #     # flash("The server's properties could not be updated, but the server was created! Please wait before trying again.")
-    #     # return redirect(url_for('get_create_server'))
-    #     print(e)
-    #     time.sleep(5)
+    tags = Tag.query.filter(Tag.id.in_(form.tags.data)).all()
+    server = Server(name=form.name.data, description=str(form.description.data), docker_id=str(docker_id), owner_id=user.id, max_players=int(form.maxPlayers.data), port=port, tags=tags)
 
-    server = Server(name=form.name.data, description=str(form.description.data), docker_id=str(docker_id), owner_id=user.id, max_players=int(form.maxPlayers.data), port=port)
     db.session.add(server)
     db.session.commit()
     s = Server.query.filter_by(docker_id=docker_id).first()
@@ -295,7 +286,93 @@ def show_server(server_id):
     else:
       flash("That server doesn't exist! Why not create one?")
       return redirect(url_for('get_create_server'))
+  if session.get('user-id') == server.owner_id:
+    return render_template('user_server.html', server=server, edit=False)
   return render_template('server.html', server=server)
+
+@app.get('/server/<int:server_id>/update/')
+def get_update_server(server_id):
+  if not session.get('logged-in'):
+    print(f'[INFO] Anonymous user tried to {request.method} {url_for("get_update_server")}')
+    flash("You must be logged in to do that!")
+    return redirect(url_for('get_login'))
+
+  user_id = session.get('user-id')
+  user = User.query.filter_by(id=user_id).first()
+
+  if not user:
+    print(f"[ERROR] Failed to update server: User {user_id} does not exist")
+    flash("You don't have permission to do that!")
+    return redirect(url_for('get_login'))
+  
+  server = Server.query.filter_by(id=server_id).first()
+  if not server or server.owner_id != user_id:
+    if not server:
+      print(f'[WARN] Server {server_id} does not exist.')
+    else:
+      print(f'[WARN] User {user_id} tried updating Server {server_id}, but does not own it.')
+    flash("You don't have permission to do that!")
+    return redirect(url_for('list_server'))
+  # user exists and is logged in, server exists and is owned by said user.
+  # make form with default field values
+  form = ServerUpdateForm(
+    name=server.name,
+    description=server.description,
+    tags=server.tags,
+    id=server.id
+  )
+  tags = Tag.query.all()
+  form.tags.choices = [(t.id, t.name) for t in tags]
+  return render_template('update_server.html', form=form)
+
+@app.post('/server/<int:server_id>/update/')
+def post_update_server(server_id):
+  if not session.get('logged-in'):
+    print(f'[INFO] Anonymous user tried to {request.method} {url_for("post_update_server")}')
+    flash("You must be logged in to do that!")
+    return redirect(url_for('get_login'))
+
+  form = ServerUpdateForm()
+  form.tags.choices = [(t.id, t.name) for t in Tag.query.all()]
+  if form.validate_on_submit():
+    form_server_id = int(form.id.data)
+    if form_server_id != server_id:
+      print(f"[WARN] Failed to update server: User {user_id} does not exist")
+      flash("You don't have permission to do that.")
+      return redirect(url_for('get_login'))
+
+    user_id = session.get('user-id')
+    user = User.query.filter_by(id=user_id).first()
+    if not user:
+      print(f"[WARN] Failed to update server: User {user_id} does not exist")
+      flash("You don't have permission to do that.")
+      return redirect(url_for('get_login'))
+
+    servers = Server.query.filter_by(owner_id=user_id).all()
+    if not servers or len(servers) == 0:
+      print(f"[WARN] Failed to update server: User doesn't own any servers!")
+      flash("You have to own the server in order to update it!")
+      return redirect(url_for('get_create_server'))
+    
+    server_as_list = list(filter(lambda s : s.id == form_server_id, servers))
+    if not server_as_list or len(server_as_list) == 0:
+      print(f'[WARN] Failed to update server: User {user_id} does not own Server {server_id}!')
+      flash("You have to own the server in order to update it!")
+      return redirect(url_for('get_create_server'))
+
+    server = server_as_list[0]
+    server.name = form.name.data
+    server.description = form.description.data
+    tags = Tag.query.filter(Tag.id.in_(form.tags.data)).all()
+    server.tags = tags
+
+    db.session.add(server)
+    db.session.commit()
+    flash("Update successful!")
+    return redirect(url_for('show_server', server_id=server_id))
+  else:
+    flash_form_errors(form)
+    return redirect(url_for('get_update_server'))
 
 @app.get('/server/<int:server_id>/delete')
 def delete_server(server_id):
