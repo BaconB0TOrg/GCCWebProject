@@ -1,19 +1,22 @@
 {% extends "root.html" %}
 
 {% block title %}Home{% endblock %}
+{% block head %}
+  <script src="/static/scripts/home.js"></script>
+{% endblock %}
 
 {% block content %}
 <div class="jumbotron">
-<div class="container">
-  <h1 class="display-3">Minecraft Server Hosting</h1>
-  <p>Description of website/service/etc. here.</p>
-  <!-- <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p> -->
-</div>
+  <div class="container">
+    <h1 class="display-3">Minecraft Server Hosting</h1>
+    <p>Search for servers others have hosted here, or start one yourself!</p>
+    <!-- <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p> -->
+  </div>
 </div>
 
 <div class="container-fluid">
 <div class="row">
-  <div class="col-sm-12 col-lg-6 col-xl-4">
+  <!-- <div class="col-sm-12 col-lg-6 col-xl-4">
     <h2>Events</h2>
     <div class="row">
         <h4>Event x:</h4>
@@ -24,37 +27,43 @@
         <p>Event Info</p>
     </div>
 
-    <!-- Not Implemented -->
+    {#Not Implemented#}
     <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
     
-  </div>
-  <div class="col-sm-12 col-lg-6 col-xl-4">
+  </div> -->
+  <div class="col-sm-12 col-lg-8 col-xl-8">
     <h2>Featured Servers</h2>
+    {% for server in servers %}
     <div class="row">
-        <h4>Server 1:</h4>
-        <p>Server Info</p>
+        <h4>{{server.name}}</h4>
+        <p>{{server.description}}</p>
     </div>
-    <div class="row">
-        <h4>Server 2:</h4>
-        <p>Server Info</p>
-    </div>
-
+    <p><a class="btn btn-secondary" href="{{url_for('show_server', server_id=server.id)}}" role="button">View details &raquo;</a></p>
+    {% endfor %}
     <!-- Not Implemented -->
-    <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
 
   </div>
-  <div class="col-sm-12 col-lg-6 col-xl-4">
-    <h2>Your Server</h2>
+  {# user exists and owns at least one server #}
+  {% if user != None and (user.servers|length != 0) %}
+  <div class="col-sm-12 col-lg-4 col-xl-4">
+    <h2>Your Servers</h2>
+    {% for server in user.servers %}
+    <div id="users_servers">
+      <input hidden value="{{server.id}}"/>
+    </div>
+    {% endfor %}
+    {% for server in user.servers %}
     <p>Server Info:
-        <ul>
-            <li>Server Status</li>
-            <li>Tick Rate</li>
-        </ul>
+      <ul>
+        <li id="{{server.id}}_status">{{server.name}}</li>
+        <li id="{{server.id}}_current_players">0/{{server.max_players}}</li>
+      </ul>
     </p>
 
     <!-- Not Implemented -->
-    <p><a class="btn btn-secondary" href="/server/" role="button">Show Servers &raquo;</a></p>
-
+    <p><a class="btn btn-secondary" href="{{url_for('show_server', server_id=server.id)}}" role="button">Show Server &raquo;</a></p>
+    {% endfor %}
   </div>
+  {% endif %}
 </div>
 {% endblock %}
