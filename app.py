@@ -48,12 +48,16 @@ def redirect_to_welcome():
 @app.get('/welcome/')
 def welcome():
   user_id = session.get('user-id')
-  users = None
+  users = []
+  servers = []
   user = None
   if(user_id != None):
     users = User.query.filter_by(id=user_id).all()
     if len(users) != 0:
+      servers = Server.query.filter_by(owner_id=user_id).all()
       user = users[0]
+      user.servers = servers
+      print(user.servers)
 
   return render_template('home.html', user=user)
 

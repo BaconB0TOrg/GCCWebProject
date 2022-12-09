@@ -47,16 +47,16 @@
   {% if user != None and (user.servers|length != 0) %}
   <div class="col-sm-12 col-lg-4 col-xl-4">
     <h2>Your Servers</h2>
-    {% for server in user.servers %}
     <div id="users_servers">
-      <input hidden value="{{server.id}}"/>
+      {% for server in user.servers %}
+      <input type="hidden" data-server-id="{{server.id}}" data-docker-id="{{server.docker_id}}" value=""/>
+      {% endfor %}
     </div>
-    {% endfor %}
     {% for server in user.servers %}
     <p>Server Info:
       <ul>
-        <li id="{{server.id}}_status">{{server.name}}</li>
-        <li id="{{server.id}}_current_players">0/{{server.max_players}}</li>
+        <li id="{{server.id}}_status">Name: {{server.name}}</li>
+        <li>Number of players online: <span id="{{server.id}}_current_players">0</span>/{{server.max_players}}</li>
       </ul>
     </p>
 
