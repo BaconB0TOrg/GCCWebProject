@@ -247,8 +247,9 @@ def post_create_server():
       flash('The server could not be created, please wait before trying again.')
       return redirect(url_for('get_create_server'))
     
-    mcdocker.update_server_properties(docker_id, "gamemode", str(form.gamemode.data))
-    mcdocker.update_server_properties(docker_id, "max-players", str(form.maxPlayers.data))
+    #mcdocker.update_server_properties(docker_id, "gamemode", str(form.gamemode.data))
+    #mcdocker.update_server_properties(docker_id, "max-players", str(form.maxPlayers.data))
+    mcdocker.update_server_properties(container_id=docker_id, updated_properties={"gamemode":str(form.gamemode.data)})
 
     # done=False
     # while(not done):
