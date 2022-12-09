@@ -39,11 +39,10 @@ def setup_models(db: SQLAlchemy):
     __tablename__ = 'tags'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode, nullable=False)
-    value= db.Column(db.Unicode, nullable=False)
     def __repr__(self):
       return str(self)
     def __str__(self):
-      return f"Tag(name={self.name}, value={self.value})"
+      return f"Tag(name={self.name}, id={self.id})"
 
   ServerTag = db.Table(
     'server_tags',
@@ -142,9 +141,9 @@ def seed_required(db, tableClasses):
   (User, Server, Tag, SiteRole, ServerTag, ServerRolePermission, UserServerRole, ServerEvent) = tableClasses
 
   tags = [
-    Tag(name="SMP", value="smp"),
-    Tag(name="Vanilla", value="vanilla"),
-    Tag(name="Modded", value="modded")
+    Tag(name="SMP"),
+    Tag(name="Vanilla"),
+    Tag(name="Modded")
   ]
   db.session.add_all(tags)
   db.session.commit()

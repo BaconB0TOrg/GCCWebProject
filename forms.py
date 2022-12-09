@@ -61,7 +61,7 @@ class ServerForm(FlaskForm):
     ]
     name = StringField("Name", validators=[InputRequired()])
     description = StringField("Description", validators=[Optional()])
-    tags = SelectMultipleField("Tags", validators=[Optional()])
+    tags = SelectMultipleField("Tags", validators=[Optional()], coerce=int)
     maxPlayers = IntegerField("Maximum Players", validators=[InputRequired(), NumberRange(2, 50)])
     gamemode = SelectField("Gamemode", choices=[('Survival', 'survival'), ('Creative', 'creative')], validators=[InputRequired()])
     submit = SubmitField("Submit")
@@ -112,7 +112,7 @@ class ServerUpdateForm(FlaskForm):
     ]
     name = StringField("Name", validators=[InputRequired()])
     description = StringField("Description", validators=[Optional()])
-    tags = SelectMultipleField("Tags", validators=[Optional()])
+    tags = SelectMultipleField("Tags", validators=[Optional()], coerce=int)
     id = HiddenField("Id", validators=[InputRequired()])
     submit = SubmitField("Submit")
 

@@ -233,7 +233,7 @@ def get_create_server():
   form = ServerForm()
   tags = Tag.query.all()
 
-  form.tags.choices = [(t.value, t.name) for t in tags]
+  form.tags.choices = [(t.id, t.name) for t in tags]
   return render_template('new_server.html', form=form)
 
 @app.post('/server/create/')
@@ -245,7 +245,7 @@ def post_create_server():
 
   tags = Tag.query.all()
   form = ServerForm()
-  form.tags.choices = [(t.value, t.name) for t in tags]
+  form.tags.choices = [(t.id, t.name) for t in tags]
 
   if form.validate_on_submit():
     user_id = session.get('user-id')
@@ -265,7 +265,9 @@ def post_create_server():
       flash('The server could not be created, please wait before trying again.')
       return redirect(url_for('get_create_server'))
 
-    server = Server(name=form.name.data, description=str(form.description.data), docker_id=str(docker_id), owner_id=user.id, max_players=int(form.maxPlayers.data), port=port)
+    tags = Tag.query.filter(Tag.id.in_(form.tags.data)).all()
+    server = Server(name=form.name.data, description=str(form.description.data), docker_id=str(docker_id), owner_id=user.id, max_players=int(form.maxPlayers.data), port=port, tags=tags)
+
     db.session.add(server)
     db.session.commit()
     s = Server.query.filter_by(docker_id=docker_id).first()
@@ -318,43 +320,57 @@ def get_update_server(server_id):
     id=server.id
   )
   tags = Tag.query.all()
-  form.tags.choices = [(t.value, t.name) for t in tags]
+  form.tags.choices = [(t.id, t.name) for t in tags]
   return render_template('update_server.html', form=form)
 
 @app.post('/server/<int:server_id>/update/')
-def post_update_server():
+def post_update_server(server_id):
   if not session.get('logged-in'):
     print(f'[INFO] Anonymous user tried to {request.method} {url_for("post_update_server")}')
     flash("You must be logged in to do that!")
     return redirect(url_for('get_login'))
 
   form = ServerUpdateForm()
+  form.tags.choices = [(t.id, t.name) for t in Tag.query.all()]
   if form.validate_on_submit():
-    user_id = session.get('user-id')
-    user = User.query.filter_by(id=user_id).first()
-    if not user:
-      print(f"[ERROR] Failed to update server: User {user_id} does not exist")
+    form_server_id = int(form.id.data)
+    if form_server_id != server_id:
+      print(f"[WARN] Failed to update server: User {user_id} does not exist")
       flash("You don't have permission to do that.")
       return redirect(url_for('get_login'))
 
-    # this calc won't work if we delete servers who no longer have docker containers from the db.
+    user_id = session.get('user-id')
+    user = User.query.filter_by(id=user_id).first()
+    if not user:
+      print(f"[WARN] Failed to update server: User {user_id} does not exist")
+      flash("You don't have permission to do that.")
+      return redirect(url_for('get_login'))
+
     servers = Server.query.filter_by(owner_id=user_id).all()
     if not servers or len(servers) == 0:
-      print(f"[ERROR] User doesn't own any servers!")
-      flash("You have to own a server in order to update it!")
+      print(f"[WARN] Failed to update server: User doesn't own any servers!")
+      flash("You have to own the server in order to update it!")
+      return redirect(url_for('get_create_server'))
+    
+    server_as_list = list(filter(lambda s : s.id == form_server_id, servers))
+    if not server_as_list or len(server_as_list) == 0:
+      print(f'[WARN] Failed to update server: User {user_id} does not own Server {server_id}!')
+      flash("You have to own the server in order to update it!")
       return redirect(url_for('get_create_server'))
 
-    
-    server = filter(lambda s : s.id == form.id.data, servers)
-    print(server)
-    docker_id = server.docker_id
+    server = server_as_list[0]
+    server.name = form.name.data
+    server.description = form.description.data
+    tags = Tag.query.filter(Tag.id.in_(form.tags.data)).all()
+    server.tags = tags
+
     db.session.add(server)
     db.session.commit()
-    s = Server.query.filter_by(docker_id=docker_id).first()
-    return redirect(url_for('list_server'))
+    flash("Update successful!")
+    return redirect(url_for('show_server', server_id=server_id))
   else:
     flash_form_errors(form)
-    return redirect(url_for('get_create_server'))
+    return redirect(url_for('get_update_server'))
 
 @app.get('/server/<int:server_id>/delete')
 def delete_server(server_id):
