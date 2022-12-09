@@ -47,7 +47,15 @@ def redirect_to_welcome():
 
 @app.get('/welcome/')
 def welcome():
-    return render_template('home.html')
+  user_id = session.get('user-id')
+  users = None
+  user = None
+  if(user_id != None):
+    users = User.query.filter_by(id=user_id).all()
+    if len(users) != 0:
+      user = users[0]
+
+  return render_template('home.html', user=user)
 
 @app.get('/login/')
 def get_login():
