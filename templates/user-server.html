@@ -17,8 +17,6 @@
   {% for tag in server.tags %}
   <span>{{tag}}</span>
   {% endfor %}
-  <a href="/">
-    <button class="btn btn-primary btn-lg">Home</button>
-  </a>
+  <button onClick="window.location.reload();">Edit</button>
 </div>
 {% endblock %}
