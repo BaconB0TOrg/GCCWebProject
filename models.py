@@ -39,10 +39,11 @@ def setup_models(db: SQLAlchemy):
     __tablename__ = 'tags'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode, nullable=False)
+    value= db.Column(db.Unicode, nullable=False)
     def __repr__(self):
       return str(self)
     def __str__(self):
-      return f"Tag(name={self.name})"
+      return f"Tag(name={self.name}, value={self.value})"
 
   ServerTag = db.Table(
     'server_tags',
@@ -77,6 +78,7 @@ def setup_models(db: SQLAlchemy):
     max_players = db.Column(db.Integer, nullable=False)
     port = db.Column(db.Integer, nullable=False)
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    status = db.Column(db.Boolean, nullable=False, default=False)
     users = db.relationship('User', secondary=UserServerRole, back_populates='servers')
     roles = db.relationship(ServerRolePermission, backref='server')
     events = db.relationship(ServerEvent, backref='sever')
@@ -84,7 +86,7 @@ def setup_models(db: SQLAlchemy):
     def __repr__(self):
       return str(self)
     def __str__(self):
-      return f"Server(name={self.name}, description={self.description}, owner_id={self.owner_id}, num_users={len(self.users)}, tags={self.tags}, docker_id={self.docker_id})"
+      return f"Server(name={self.name}, status={self.status}, description={self.description}, owner_id={self.owner_id}, num_users={len(self.users)}, tags={self.tags}, docker_id={self.docker_id})"
 
   class SiteRole(db.Model):
     __tablename__ = 'site_roles'
@@ -131,10 +133,25 @@ def models_reset(db: SQLAlchemy, seed: bool=False, tables=None):
   """Drops all tables and recreates them with. `seed=True` will insert dummy data into the database"""
   db.drop_all()
   db.create_all()
+  seed_required(db, tableClasses=tables)
   if seed:
-    models_seed(db, tableClasses=tables)
+    seed_optional(db, tableClasses=tables)
 
-def models_seed(db: SQLAlchemy, tableClasses):
+# Seeds tables needed by prod and dev
+def seed_required(db, tableClasses):
+  (User, Server, Tag, SiteRole, ServerTag, ServerRolePermission, UserServerRole, ServerEvent) = tableClasses
+
+  tags = [
+    Tag(name="SMP", value="smp"),
+    Tag(name="Vanilla", value="vanilla"),
+    Tag(name="Modded", value="modded")
+  ]
+  db.session.add_all(tags)
+  db.session.commit()
+
+
+# seeds tables that are not required by prod nor dev
+def seed_optional(db: SQLAlchemy, tableClasses):
   (User, Server, Tag, SiteRole, ServerTag, ServerRolePermission, UserServerRole, ServerEvent) = tableClasses
 
   # TODO: Seed the tables with admin accounts.
@@ -148,14 +165,6 @@ def models_seed(db: SQLAlchemy, tableClasses):
   userOne = User(username="admin", email="admin@email.com", password="admin", site_role_id=siteRoles[0].id)
 
   db.session.add(userOne)
-  db.session.commit()
-
-  tags = [
-    Tag(name="SMP"),
-    Tag(name="Vanilla"),
-    Tag(name="Modded")
-  ]
-  db.session.add_all(tags)
   db.session.commit()
 
   users = User.query.all()

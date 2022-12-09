@@ -14,8 +14,7 @@
   {% for tag in server.tags %}
   <span>{{tag}}</span>
   {% endfor %}
-  <a href="/">
-    <button class="btn btn-primary btn-lg">Home</button>
-  </a>
+  <a href="/"><button class="btn btn-primary btn-lg">Home</button></a>
+  <a href="{{url_for('get_update_server', server_id=server.id)}}" class="btn btn-primary btn-lg">Update Server</a>
 </div>
 {% endblock %}

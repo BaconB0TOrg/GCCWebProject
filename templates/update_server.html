@@ -1,23 +1,19 @@
 {% extends "root.html" %}
 
-{% block title %} Create a new Server {% endblock %}
+{% block title %} Update Server {% endblock %}
 
 {% block content %}
 <div>To select multiple tags, hold ctrl and click to select or deselect the tags you want.</div>
-<form method="post" action="{{url_for('post_create_server')}}">
-  {{ form.hidden_tag() }}
+<form action="{{url_for('post_update_server', server_id=form.id.data)}}" method="post">
   {{ form.name.label }}
   {{ form.name() }}
   {{ form.description.label }}
   {{ form.description() }}
   {{ form.tags.label }}
   {{ form.tags(size=(form.tags.choices|length)) }}
-  <!-- Server Properties -->
-  {{ form.maxPlayers.label }}
-  {{ form.maxPlayers() }}
-  {{ form.gamemode.label }}
-  {{ form.gamemode() }}
   {{ form.submit() }}
-  <!-- <a id="startServer" href="/start-server/">Create a Server</a> -->
 </form>
+<a href="/">
+  <button class="btn btn-primary btn-lg">Home</button>
+</a>
 {% endblock %}
