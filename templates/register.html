@@ -3,7 +3,7 @@
 {% block title %} Sign up {% endblock %}
 
 {% block content %}
-<h1>Enter Your Name</h1>
+<h1>Register Now:</h1>
 <form action="{{url_for('post_register')}}" method="post">
     {# add CSRF Protection #}
     {{ form.hidden_tag() }}
