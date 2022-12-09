@@ -24,11 +24,16 @@
   <nav>
     <div class="m-1 p-1">
       <a class='btn btn-secondary' role="button" href="/">Home</a>
-      <a class='btn btn-secondary' role="button" href="/login/">Login</a>
       <a class='btn btn-secondary' role="button" href="/register/">Sign up</a>
-      <a class='btn btn-secondary' role="button" href="/log-out/">Log Out</a>
       <a class='btn btn-secondary' role="button" href="/server/">Servers</a>
       <a class='btn btn-secondary' role="button" href="/server/create">Make a new Server</a>
+      
+      {% if session['logged-in'] %}
+        <a class='btn btn-secondary' role="button" href="/log-out/">Log Out</a>
+      {% else %}
+        <a class='btn btn-secondary' role="button" href="/login/">Login</a>
+      {% endif %}
+      
     </div>
   </nav>
   <div class="m-4">
