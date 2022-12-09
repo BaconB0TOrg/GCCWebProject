@@ -1,10 +1,6 @@
 {% extends "root.html" %}
 
-{% block title %} Your Servers {% endblock %}
-
-{% block head %}
-<script src="/static/scripts/scripts.js"></script>
-{% endblock %}
+{% block title %} Create a new Server {% endblock %}
 
 {% block content %}
 <form method="post" action="{{url_for('post_create_server')}}">
@@ -14,7 +10,7 @@
   {{ form.description.label }}
   {{ form.description() }}
   {{ form.tags.label }}
-  {{ form.tags() }}
+  {{ form.tags(size=(form.tags.choices|length)) }}
   <!-- Server Properties -->
   {{ form.maxPlayers.label }}
   {{ form.maxPlayers() }}
