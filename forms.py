@@ -113,7 +113,7 @@ class ServerUpdateForm(FlaskForm):
     name = StringField("Name", validators=[InputRequired()])
     description = StringField("Description", validators=[Optional()])
     tags = SelectMultipleField("Tags", validators=[Optional()])
-    id = HiddenField("Id", nullable=False)
+    id = HiddenField("Id", validators=[InputRequired()])
     submit = SubmitField("Submit")
 
 class ChangeEmailForm(FlaskForm):

@@ -3,6 +3,7 @@
 {% block title %} Create a new Server {% endblock %}
 
 {% block content %}
+<div>To select multiple tags, hold ctrl and click to select or deselect the tags you want.</div>
 <form method="post" action="{{url_for('post_create_server')}}">
   {{ form.hidden_tag() }}
   {{ form.name.label }}
