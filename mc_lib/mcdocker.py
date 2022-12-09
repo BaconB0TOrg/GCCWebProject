@@ -4,6 +4,7 @@ import sys
 import tarfile
 import io
 from configparser import ConfigParser
+import threading
 
 def make_server(return_container=False, name="mc-default", port=25565, max_players=20):
     """
@@ -30,18 +31,10 @@ def make_server(return_container=False, name="mc-default", port=25565, max_playe
 
         if not mc_server_container:
             raise Exception("Docker is not running!")
-            
-        attached = mc_server_container.attach(stream=True, stdout=True, stderr=False, logs=False)
-        print(attached)
 
-        # Looking for a certain string to signal that the mc_server has started
-        for console_output in attached:
-            print(console_output)
-            if "RCON running on" in console_output.decode():
-                attached.close()
-                break
-
-        update_server_properties(container_id=name, updated_properties={"difficulty": "hard", "max-players": "100", "motd":"ITS ALIVE"}, init_properties=True)
+        # Start a threaded process to go ahead and read the mc_server_loggin info
+        thread_x = threading.Thread(target=async_server_create, args=(mc_server_container,), name="thread")
+        thread_x.start()
 
         if return_container:
             return mc_server_container
@@ -50,6 +43,20 @@ def make_server(return_container=False, name="mc-default", port=25565, max_playe
     except Exception as e:
         print(e)
         return None
+
+
+def async_server_create(mc_server_container):
+    attached = mc_server_container.attach(stream=True, stdout=True, stderr=False, logs=False)
+
+    # Looking for a certain string to signal that the mc_server has started
+    for console_output in attached:
+        print(console_output)
+        if "RCON running on" in console_output.decode():
+            attached.close()
+            break
+
+    update_server_properties(container_id=mc_server_container.id, updated_properties={"difficulty": "hard", "max-players": "100", "motd":"ITS ALIVE"}, init_properties=True)
+
 
 def update_server_properties(container_id="mc-default", updated_properties={}, init_properties=False):
     """
