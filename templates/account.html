@@ -19,7 +19,7 @@
 <div id="account">
   <p>{{user.username}}</p>
   <p>{{user.email}}</p>
-  <button id="change-email" onclick="showEmailForm()">Change email</button>
+  <a class="btn btn-secondary" id="change-email" onclick="showEmailForm()">Change email</a>
   <a class="btn btn-danger" id="sign-out" href="{{url_for('get_log_out')}}">Sign out</a>
 </div>
 
