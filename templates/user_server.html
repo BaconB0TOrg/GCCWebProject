@@ -6,19 +6,24 @@
 {% endblock %}
 
 {% block content %}
-<div>
-  <h1>{{server.name}}</h1>
-  <p>Description {{server.description}}</p>
-  <h3>Max Players: {{server.max_players}}</h3>
-  <div class='d-flex' id="tags">
-    <h3>Tags:</h3>
-    <ul>
-      {% for tag in server.tags %}
-      <span class="list-inline-item badge rounded-pill text-bg-info">{{tag.name}}</span>
-      {% endfor %}
-    </ul>
+<div class="d-lg-flex">
+  <div>
+    <h1>{{server.name}}</h1>
+    <p>Description {{server.description}}</p>
+    <h3>Max Players: {{server.max_players}}</h3>
+    <div class='d-flex' id="tags">
+      <h3>Tags:</h3>
+      <ul>
+        {% for tag in server.tags %}
+        <span class="list-inline-item badge rounded-pill text-bg-info">{{tag.name}}</span>
+        {% endfor %}
+      </ul>
+    </div>
+    <a href="/"><button class="btn btn-primary btn-lg">Home</button></a>
+    <a href="{{url_for('get_update_server', server_id=server.id)}}" class="btn btn-danger btn-lg">Edit Server</a>
   </div>
-  <a href="/"><button class="btn btn-primary btn-lg">Home</button></a>
-  <a href="{{url_for('get_update_server', server_id=server.id)}}" class="btn btn-danger btn-lg">Edit Server</a>
+  <div id="terminal">
+    <iframe style="height:100%; width:100%" src="/server/{{server.id}}/terminal/" title="Server Terminal"></iframe>
+  </div>
 </div>
 {% endblock %}

@@ -18,6 +18,7 @@
 
 <body>
   {% include "flash.html" %}
+  {% block nav %}
   <nav>
     <div class="m-1 p-1">
       <a class='btn btn-secondary active' role="button" aria-pressed="true" href="/">Home</a>
@@ -35,11 +36,12 @@
       
     </div>
   </nav>
+  {% endblock %}
   <div class="m-4">
-  {% block content %} {% endblock %}
-</body>
-
-<footer>
+    {% block content %} {% endblock %}
+  </div>
+  </body>
+  
+  <footer>
     {% block footer %} {% endblock %}
-</footer>
-</div>
+  </footer>

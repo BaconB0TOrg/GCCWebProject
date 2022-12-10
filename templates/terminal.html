@@ -1,5 +1,6 @@
 {% extends "root.html" %}
 
+
 {% block title %} Terminal {% endblock %}
 
 {% block head %}
@@ -7,6 +8,8 @@
 <script src="https://unpkg.com/jquery.terminal/js/jquery.terminal.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/jquery.terminal/css/jquery.terminal.min.css" />
 {% endblock %}
+
+{% block nav %} {% endblock %}
 
 {% block content %}
 <input id="docker-id" style="display:none" value="{{docker_id}}" hidden />
