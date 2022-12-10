@@ -6,13 +6,83 @@
 {% endblock %}
 
 {% block content %}
+<link href = "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
+<script src = "https://code.jquery.com/jquery-1.10.2.js"></script>
+<script src = "https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
+<!-- Javascript -->
+<script>
+  // massive tech debt bb cries softly
+  $(function() {
+    let servers = [];
+    const serverNames = document.getElementsByClassName("server-name");
+    for(let i  = 0; i < serverNames.length; i++) {
+      servers.push(serverNames[i].innerText);
+    }
+    $( "#automplete" ).autocomplete({
+        source: servers
+    });
+  });
+</script>
+
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    console.log("DOM Loaded")
+    document.getElementById("search-btn").addEventListener("click", search);
+  });
+
+  function search(){
+    const searchText = document.getElementById("automplete").value;
+    // Get all elements that are part of the list
+    let elements = [];
+    const servers = document.getElementsByClassName("servers");
+    for(let i = 0; i < servers.length; i++){
+      elements.push(servers[i]);
+    }
+
+    if (searchText === ""){ // Gaurd class to reset search
+      for (let i = 0; i < elements.length; i++){
+        elements[i].style.display = "block"; //DISPLAY
+      }
+      return;
+    }
+
+    for (let i = 0; i < elements.length; i++){
+      const text = elements[i].innerText.split("\n")[0];
+      console.log(text);
+      if(!text.includes(searchText)){
+        elements[i].style.display = "none"; // HIDES
+      }else{
+        elements[i].style.display = "block";
+      }
+    }
+    
+
+
+  }
+</script>
+
+
 <h1>All Servers</h1>
+<div class = "ui-widget">
+  <label for = "automplete">Server Search: </label>
+  <div class="input-group col-3">
+    <input type="text" class="form-control" placeholder="Search" aria-label="User's Search" aria-describedby="basic-addon2" id = "automplete">
+    <div class="input-group-append">
+      <button id = "search-btn" class="btn btn-outline-secondary" type="button">Search</button>
+    </div>
+  </div>
+</div>
 {% for server in servers %}
-  <div>
-    <span>{{server.name}}</span>
-    <span><a href="{{url_for('show_server', server_id=server.id)}}">View</a></span>
-    <!-- Don't show unless owner -->
-    <span><a href="{{url_for('delete_server', server_id=server.id)}}">Delete</a></span>
+  <div id = {{server.name}}>
+    <div class="servers">
+      <div class = "server-name">
+        <span>{{server.name}}</span>
+      </div>
+      <span><a href="{{url_for('show_server', server_id=server.id)}}">View</a></span>
+      <!-- Don't show unless owner -->
+      <span><a href="{{url_for('delete_server', server_id=server.id)}}">Delete</a></span>
+    </div>
   </div>
 {% endfor %}
 {% endblock %}
