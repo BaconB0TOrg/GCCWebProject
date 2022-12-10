@@ -6,83 +6,73 @@
 {% endblock %}
 
 {% block content %}
-<link href = "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
-<script src = "https://code.jquery.com/jquery-1.10.2.js"></script>
-<script src = "https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-
-<!-- Javascript -->
 <script>
-  // massive tech debt bb cries softly
-  $(function() {
-    let servers = [];
-    const serverNames = document.getElementsByClassName("server-name");
-    for(let i  = 0; i < serverNames.length; i++) {
-      servers.push(serverNames[i].innerText);
-    }
-    $( "#automplete" ).autocomplete({
-        source: servers
-    });
-  });
-</script>
+window.addEventListener('DOMContentLoaded', (event) => {
+  console.log("DOM Loaded");
 
-<script>
-  window.addEventListener('DOMContentLoaded', (event) => {
-    console.log("DOM Loaded")
-    document.getElementById("search-btn").addEventListener("click", search);
-  });
-
-  function search(){
-    const searchText = document.getElementById("automplete").value;
-    // Get all elements that are part of the list
-    let elements = [];
-    const servers = document.getElementsByClassName("servers");
-    for(let i = 0; i < servers.length; i++){
-      elements.push(servers[i]);
-    }
-
-    if (searchText === ""){ // Gaurd class to reset search
-      for (let i = 0; i < elements.length; i++){
-        elements[i].style.display = "block"; //DISPLAY
-      }
-      return;
-    }
-
-    for (let i = 0; i < elements.length; i++){
-      const text = elements[i].innerText.split("\n")[0];
-      console.log(text);
-      if(!text.includes(searchText)){
-        elements[i].style.display = "none"; // HIDES
-      }else{
-        elements[i].style.display = "block";
-      }
-    }
-    
-
-
+  // loads all server names
+  // get all the server names
+  const serverNames = document.getElementsByClassName("server-names-text");
+  console.log(serverNames.length);
+  // get a reference to the data list
+  const dl = document.getElementById("server-names-dl")
+  // for loop over all the server names 
+  for(let i = 0; i < serverNames.length; i++){
+    const text = serverNames[i].innerText;
+    const element = document.createElement("option");
+    element.innerText = text;
+    dl.appendChild(element);
   }
-</script>
 
+  document.getElementById("search-btn").addEventListener("click", function () {
+    // Get reference to the text we are searching for 
+    const searchText = document.getElementById("server-datalist").value;
+    // Get reference to all elements that may or may not be deleted
+    const serverList = document.getElementsByClassName("server-list");
+
+    for(let i = 0; i < serverList.length; i++){
+      // Get reference to each servers name
+      const serverName = serverList[i].querySelector('#server-name').innerText;
+      if (serverName.includes(searchText)){
+        serverList[i].style.display = null;
+      }else {
+        serverList[i].style.display = "none";
+      }
+    }
+
+  });
+
+});
+</script>
 
 <h1>All Servers</h1>
-<div class = "ui-widget">
-  <label for = "automplete">Server Search: </label>
-  <div class="input-group col-3">
-    <input type="text" class="form-control" placeholder="Search" aria-label="User's Search" aria-describedby="basic-addon2" id = "automplete">
-    <div class="input-group-append">
-      <button id = "search-btn" class="btn btn-outline-secondary" type="button">Search</button>
-    </div>
+<div class="input-group w-25 col-3">
+  <input type="text" class="form-control" placeholder="Search Server Names" id="server-datalist" autocomplete="off" list="server-names-dl">
+  <datalist id="server-names-dl">
+  </datalist>
+  <div class="input-group-append">
+    <button id = "search-btn" class="btn btn-outline-secondary" type="button">Search</button>
   </div>
 </div>
 {% for server in servers %}
-  <div id = {{server.name}}>
-    <div class="servers">
-      <div class = "server-name">
-        <span>{{server.name}}</span>
-      </div>
-      <span><a href="{{url_for('show_server', server_id=server.id)}}">View</a></span>
-      <!-- Don't show unless owner -->
-      <span><a href="{{url_for('delete_server', server_id=server.id)}}">Delete</a></span>
+<div class="container-fluid">
+  <div class="row server-list" style="margin-top: 50px;">
+    <div class = "col-sm">
+      <span class = "server-names-text" id = "server-name">{{server.name}}</span>
+      <br>
+      <span>Owner: User {{server.owner_id}}</span>
+    </div>
+    <div class = "col-sm">
+      <span>{{server.description}}</span>
+    </div>
+    <div class = "col-sm">
+      <span>localhost:{{server.port}}</span>
     </div>
   </div>
+</div>
 {% endfor %}
 {% endblock %}
+
+<!--<span><a href="{{url_for('show_server', server_id=server.id)}}">View</a></span> -->
+<!-- Don't show unless owner -->
+<!--<span><a href="{{url_for('delete_server', server_id=server.id)}}">Delete</a></span> -->
