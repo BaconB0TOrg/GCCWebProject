@@ -30,16 +30,16 @@ def flash_form_errors(form):
 # Route Handlers        #
 #########################
 
-@app.route('/site-map/')
-def site_map():
-  links = []
-  for rule in app.url_map.iter_rules():
-    if 'GET' in rule.methods:
-      rule = escape(rule.rule)
-      links.append(f'<a href={rule}>{rule}</a>')
-  # links is now a list of url's with their parameters
-  linksString = '<br>'.join(links)
-  return linksString
+# @app.route('/site-map/')
+# def site_map():
+#   links = []
+#   for rule in app.url_map.iter_rules():
+#     if 'GET' in rule.methods:
+#       rule = escape(rule.rule)
+#       links.append(f'<a href={rule}>{rule}</a>')
+#   # links is now a list of url's with their parameters
+#   linksString = '<br>'.join(links)
+#   return linksString
 
 @app.get('/')
 def redirect_to_welcome():
@@ -73,7 +73,6 @@ def get_login():
 def post_login():
   # Don't allow logged in users to nav here
   if session.get('logged-in'):
-    print('[INFO] User tried to login while already logged in!')
     print('[INFO] User tried to login while already logged in!')
     flash('You are not allowed to view that page.')
     return redirect(url_for('welcome'))
