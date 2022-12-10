@@ -1,5 +1,7 @@
 import enum
 import os
+from passlib.hash import sha256_crypt
+import mc_lib.mcdocker as mcdocker 
 
 from flask_sqlalchemy import SQLAlchemy
 
@@ -107,6 +109,7 @@ def setup_models(db: SQLAlchemy):
     password = db.Column(db.Unicode, nullable=False)
     email = db.Column(db.Unicode, nullable=False)
     username = db.Column(db.Unicode, nullable=False)
+    # TODO: Make site role mandatory
     site_role_id = db.Column(db.Integer, db.ForeignKey(SiteRole.id))
     servers = db.relationship('Server', secondary=UserServerRole, back_populates='users')
     def __repr__(self):
@@ -129,7 +132,7 @@ def init(db: SQLAlchemy, seed: bool = False, tables=None):
   return True
 
 def models_reset(db: SQLAlchemy, seed: bool=False, tables=None):
-  """Drops all tables and recreates them with. `seed=True` will insert dummy data into the database"""
+  """Drops all tables and recreates them. `seed=True` will insert dummy data into the database"""
   db.drop_all()
   db.create_all()
   seed_required(db, tableClasses=tables)
@@ -143,7 +146,7 @@ def seed_required(db, tableClasses):
   tags = [
     Tag(name="SMP"),
     Tag(name="Vanilla"),
-    Tag(name="Modded"),
+    # Tag(name="Modded"),
     Tag(name="Friendly"),
     Tag(name="Community"),
     Tag(name="FFA"),
@@ -167,22 +170,45 @@ def seed_optional(db: SQLAlchemy, tableClasses):
 
   # TODO: Seed the tables with admin accounts.
   # User, Server, Tag, SiteRole, ServerTag, ServerRolePermission, UserServerRole, ServerEvent = setup_models(db)
-  siteRoleOne = SiteRole(name="admin", action="create", resource="server")
+  # siteRoleOne = SiteRole(name="admin", action="create", resource="server")
 
-  db.session.add(siteRoleOne)
-  db.session.commit()
+  # db.session.add(siteRoleOne)
+  # db.session.commit()
   
-  siteRoles = SiteRole.query.all()
-  userOne = User(username="admin", email="admin@email.com", password="admin", site_role_id=siteRoles[0].id)
+  # siteRoles = SiteRole.query.all()
+  addUsers = [
+    User(username="Jason Derulo", email="admin@email.com", password=sha256_crypt.encrypt(str("slayqueen"))),
+    User(username="Mario", email="chrispratt@gmail.com", password=sha256_crypt.encrypt(str("itsamemario"))),
+    User(username="BaconB0T", email="brown1ethan@gmail.com", password=sha256_crypt.encrypt(str("12345678"))),
+    User(username="username", email="email@provider.com", password=sha256_crypt.encrypt(str("12345678")))
+  ]
+  # userOne = User(username="admin", email="admin@email.com", password="admin", site_role_id=siteRoles[0].id)
 
-  db.session.add(userOne)
+  db.session.add_all(addUsers)
   db.session.commit()
 
   users = User.query.all()
   tags = Tag.query.all()
 
-  serverOne = Server(name="First Server!", description="The first server of the Minecraft Server Hosting Service, <cool and memorable name here>!", docker_id="fake docker id", max_players=20, tags=[tags[0], tags[1]])
-  db.session.add(serverOne)
+  # Make docker containers
+  docker_ids = [
+    mcdocker.make_server(name="FirstServer",port=25565, max_players=20),
+    mcdocker.make_server(name="SecondServer",port=25567,max_players=10),
+    mcdocker.make_server(name="ThirdServer",port=25569, max_players=20)
+    # mcdocker.make_server(name="FourthServer",port=25571,max_players=20),
+    # mcdocker.make_server(name="FifthServer",port=25573, max_players=50),
+    # mcdocker.make_server(name="SixthServer",port=25575, max_players=2)
+  ]
+
+  addServers = [
+    Server(name="FirstServer", port=25565,owner_id=users[0].id,docker_id=docker_ids[0], description="The First server of the Minecraft Server Hosting Service, <cool and memorable name here>!",  max_players=20, tags=[tags[0], tags[1]]),
+    Server(name="SecondServer",port=25567,owner_id=users[0].id, docker_id=docker_ids[1], description="The Second server of the Minecraft Server Hosting Service, <cool and memorable name here>!",max_players=10, tags=[tags[2]]),
+    Server(name="ThirdServer", port=25569,owner_id=users[1].id,docker_id=docker_ids[2], description="The Third server of the Minecraft Server Hosting Service, <cool and memorable name here>!",  max_players=20, tags=[tags[0]])
+    # Server(name="FourthServer",owner_id=users[2].id, docker_id=docker_ids[3], description="The Fourth server of the Minecraft Server Hosting Service, <cool and memorable name here>!",max_players=20, tags=[tags[0], tags[1], tags[2], tags[3]]),
+    # Server(name="FifthServer", owner_id=users[3].id,docker_id=docker_ids[4], description="The Fifth server of the Minecraft Server Hosting Service, <cool and memorable name here>!",  max_players=50, tags=[tags[5], tags[4]]),
+    # Server(name="SixthServer", owner_id=users[2].id,docker_id=docker_ids[5], description="The Sixth server of the Minecraft Server Hosting Service, <cool and memorable name here>!",  max_players=2,  tags=[tags[6], tags[9]])
+  ]
+  db.session.add_all(addServers)
   db.session.commit()
   
   # serverRoles = [

@@ -1,4 +1,4 @@
-import mc_lib.mcdocker as mcdocker 
+import mc_lib.mcdocker as mcdocker
 import os, models
 from flask import Flask, escape
 from flask import render_template, url_for, redirect, flash, jsonify, request, session
@@ -176,7 +176,7 @@ def get_register():
 @app.post('/register/')
 def post_register():
     form = RegisterForm()
-    if form.validate():
+    if form.validate_on_submit():
         email = form.email.data
         uname = form.username.data
         checkUsers = User.query.filter_by(email=email).all()
@@ -223,7 +223,7 @@ def list_server():
     return redirect(url_for('get_login'))
   servers = Server.query.all()
   # servers = Server.query.filter_by(owner_id=user.id).all()
-  return render_template('server_list.html', servers=servers)
+  return render_template('server_list.html', servers=servers, user_id=user.id)
 
 @app.get('/server/create/')
 def get_create_server():

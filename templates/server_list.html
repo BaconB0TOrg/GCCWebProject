@@ -81,7 +81,9 @@
       </div>
       <span><a href="{{url_for('show_server', server_id=server.id)}}">View</a></span>
       <!-- Don't show unless owner -->
+      {% if user_id == server.owner_id %}
       <span><a href="{{url_for('delete_server', server_id=server.id)}}">Delete</a></span>
+      {% endif %}
     </div>
   </div>
 {% endfor %}
