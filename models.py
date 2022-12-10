@@ -143,7 +143,19 @@ def seed_required(db, tableClasses):
   tags = [
     Tag(name="SMP"),
     Tag(name="Vanilla"),
-    Tag(name="Modded")
+    Tag(name="Modded"),
+    Tag(name="Friendly"),
+    Tag(name="Community"),
+    Tag(name="FFA"),
+    Tag(name="Chaos"),
+    Tag(name="Factions"),
+    Tag(name="New Players"),
+    Tag(name="Experienced Players"),
+    Tag(name="Hardcore"),
+    Tag(name="Keep Inventory"),
+    Tag(name="Roleplay"),
+    Tag(name="AutoFarms"),
+    Tag(name="Builders")
   ]
   db.session.add_all(tags)
   db.session.commit()
