@@ -211,19 +211,14 @@ def post_register():
 
 @app.get('/server/')
 def list_server():
-  if not session.get('logged-in'):
-    flash('You have to be logged in to access that page!')
-    return redirect(url_for('get_login'))
-  
   email=session.get('user-email')
   user = User.query.filter_by(email=email).first()
-  if user == None:
-    print("[ERROR]: logged-in token was true but no valid email was saved in the session!")
-    flash('Uh oh, your account is unavailable.')
-    return redirect(url_for('get_login'))
+  user_id = None
+  if user:
+    user_id = user.id
   servers = Server.query.all()
   # servers = Server.query.filter_by(owner_id=user.id).all()
-  return render_template('server_list.html', servers=servers, user_id=user.id)
+  return render_template('server_list.html', servers=servers, user_id=user_id)
 
 @app.get('/server/create/')
 def get_create_server():
