@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# sqlalchemy database files
+
+server_hosting.sqlite3
