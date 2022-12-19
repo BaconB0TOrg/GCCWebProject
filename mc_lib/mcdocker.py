@@ -6,7 +6,7 @@ import io
 from configparser import ConfigParser
 import threading
 
-def make_server(return_container=False, name="mc-default", port=25565, max_players=20):
+def make_server(return_container=False, name="mc-default", port=25565, max_players=20, gamemode="survival"):
     """
     Function to start a docker minecraft server.
 
@@ -33,7 +33,7 @@ def make_server(return_container=False, name="mc-default", port=25565, max_playe
             raise Exception("Docker is not running!")
 
         # Start a threaded process to go ahead and read the mc_server_loggin info
-        thread_x = threading.Thread(target=async_server_create, args=(mc_server_container,), name="thread")
+        thread_x = threading.Thread(target=async_server_create, args=(mc_server_container, max_players, gamemode,), name="thread")
         thread_x.start()
 
         if return_container:
@@ -45,7 +45,7 @@ def make_server(return_container=False, name="mc-default", port=25565, max_playe
         return None
 
 
-def async_server_create(mc_server_container):
+def async_server_create(mc_server_container, max_players, gamemode):
     attached = mc_server_container.attach(stream=True, stdout=True, stderr=False, logs=False)
 
     # Looking for a certain string to signal that the mc_server has started
@@ -55,7 +55,7 @@ def async_server_create(mc_server_container):
             attached.close()
             break
 
-    update_server_properties(container_id=mc_server_container.id, updated_properties={"difficulty": "hard", "max-players": "100", "motd":"ITS ALIVE"}, init_properties=True)
+    update_server_properties(container_id=mc_server_container.id, updated_properties={"difficulty": "hard", "max-players": max_players, "motd":"ITS ALIVE", "gamemode": gamemode}, init_properties=True)
 
 
 def update_server_properties(container_id="mc-default", updated_properties={}, init_properties=False):
@@ -250,6 +250,7 @@ def remove_docker(container_id=None):
     except Exception as e:
         print(e)
 
+# TODO: Finish getting the world folder
 def get_server_world(container_id = None):
     """
     Function to collect the mc servers world files

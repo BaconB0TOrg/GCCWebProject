@@ -253,7 +253,7 @@ def post_create_server():
     # this calc won't work if we delete servers who no longer have docker containers from the db.
     port = 25565+Server.query.count()*2
     # TODO: Pass properties here rather than force a separate call.
-    docker_id = mcdocker.make_server(name=form.name.data,port=port, max_players=int(form.maxPlayers.data))
+    docker_id = mcdocker.make_server(name=form.name.data,port=port, max_players=str(form.maxPlayers.data), gamemode=str(form.gamemode.data.lower()))
     
     if not docker_id:
       print("[CRITICAL] Server could not be created!")
