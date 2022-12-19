@@ -194,7 +194,7 @@ def seed_optional(db: SQLAlchemy, tableClasses):
   docker_ids = [
     mcdocker.make_server(name="FirstServer",port=25565, max_players=20),
     mcdocker.make_server(name="SecondServer",port=25567,max_players=10),
-    #mcdocker.make_server(name="ThirdServer",port=25569, max_players=20)
+    # mcdocker.make_server(name="ThirdServer",port=25569, max_players=20)
     # mcdocker.make_server(name="FourthServer",port=25571,max_players=20),
     # mcdocker.make_server(name="FifthServer",port=25573, max_players=50),
     # mcdocker.make_server(name="SixthServer",port=25575, max_players=2)
@@ -203,7 +203,7 @@ def seed_optional(db: SQLAlchemy, tableClasses):
   addServers = [
     Server(name="FirstServer", port=25565,owner_id=users[0].id,docker_id=docker_ids[0], description="The First server of the Minecraft Server Hosting Service, <cool and memorable name here>!",  max_players=20, tags=[tags[0], tags[1]]),
     Server(name="SecondServer",port=25567,owner_id=users[0].id, docker_id=docker_ids[1], description="The Second server of the Minecraft Server Hosting Service, <cool and memorable name here>!",max_players=10, tags=[tags[2]]),
-    #Server(name="ThirdServer", port=25569,owner_id=users[1].id,docker_id=docker_ids[2], description="The Third server of the Minecraft Server Hosting Service, <cool and memorable name here>!",  max_players=20, tags=[tags[0]])
+    # Server(name="ThirdServer", port=25569,owner_id=users[1].id,docker_id=docker_ids[2], description="The Third server of the Minecraft Server Hosting Service, <cool and memorable name here>!",  max_players=20, tags=[tags[0]])
     # Server(name="FourthServer",owner_id=users[2].id, docker_id=docker_ids[3], description="The Fourth server of the Minecraft Server Hosting Service, <cool and memorable name here>!",max_players=20, tags=[tags[0], tags[1], tags[2], tags[3]]),
     # Server(name="FifthServer", owner_id=users[3].id,docker_id=docker_ids[4], description="The Fifth server of the Minecraft Server Hosting Service, <cool and memorable name here>!",  max_players=50, tags=[tags[5], tags[4]]),
     # Server(name="SixthServer", owner_id=users[2].id,docker_id=docker_ids[5], description="The Sixth server of the Minecraft Server Hosting Service, <cool and memorable name here>!",  max_players=2,  tags=[tags[6], tags[9]])
