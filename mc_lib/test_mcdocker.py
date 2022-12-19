@@ -1,6 +1,5 @@
 import unittest
 import mcdocker
-import docker.errors as derror 
 
 '''
 - These test are not ran in order!
@@ -30,7 +29,7 @@ class TestMCDocker(unittest.TestCase):
         self.assertFalse(mcdocker.update_server_properties(container_id=self.mc_docker, updated_properties={"dafdsa": "231"}))
 
     # Checks to see if docker containers are still controllable
-    def test_docker_controll(self):
+    def test_docker_controll_none(self):
         self.assertTrue(mcdocker.stop_docker(self.mc_docker))
         self.assertTrue(mcdocker.start_docker(self.mc_docker))
         self.assertFalse(mcdocker.stop_docker(None))
@@ -46,5 +45,5 @@ class TestMCDocker(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    # Allows it to be ran with python test_mcdocker.py instead of python -m unittest test_mcdocker.py
+    # Allows it to be ran with python test_mcdocker.py instead of python -m unittest test_mcdocker.py 
     unittest.main()

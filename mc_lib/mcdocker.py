@@ -1,8 +1,6 @@
 import docker 
 import os
-import sys
 import tarfile
-import io
 from configparser import ConfigParser
 import threading
 
@@ -149,6 +147,7 @@ def update_server_properties(container_id="mc-default", updated_properties={}, i
     container.restart()
     
     print("[INFO] Succesfully updated the server properties\n")
+    # Close the socket
 
     return True
 
@@ -303,3 +302,4 @@ if __name__ == "__main__":
     #update_server_properties(key="motd", value="Test MOTD")
     #update_server_properties(key="pvp", value="False")
     pass
+
