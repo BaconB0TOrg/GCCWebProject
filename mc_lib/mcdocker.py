@@ -6,7 +6,7 @@ import io
 from configparser import ConfigParser
 import threading
 
-def make_server(return_container=False, name="mc-default", port=25565, max_players=20, gamemode="survival"):
+def make_server(return_container=False, name="mc-default", port=25565, max_players=20, gamemode="survival", threaded=True):
     """
     Function to start a docker minecraft server.
 
@@ -32,9 +32,13 @@ def make_server(return_container=False, name="mc-default", port=25565, max_playe
         if not mc_server_container:
             raise Exception("Docker is not running!")
 
-        # Start a threaded process to go ahead and read the mc_server_loggin info
-        thread_x = threading.Thread(target=async_server_create, args=(mc_server_container, max_players, gamemode,), name="thread")
-        thread_x.start()
+        if threaded:
+            # Start a threaded process to go ahead and read the mc_server_loggin info
+            thread_x = threading.Thread(target=server_create, args=(mc_server_container, max_players, gamemode,), name="thread")
+            thread_x.start()
+        else:
+            # A non threaded run useful for testing purposes
+            server_create(mc_server_container, max_players, gamemode)
 
         if return_container:
             return mc_server_container
@@ -45,17 +49,16 @@ def make_server(return_container=False, name="mc-default", port=25565, max_playe
         return None
 
 
-def async_server_create(mc_server_container, max_players, gamemode):
+def server_create(mc_server_container, max_players, gamemode):
     attached = mc_server_container.attach(stream=True, stdout=True, stderr=False, logs=False)
 
     # Looking for a certain string to signal that the mc_server has started
     for console_output in attached:
-        print(console_output)
         if "RCON running on" in console_output.decode():
             attached.close()
             break
 
-    update_server_properties(container_id=mc_server_container.id, updated_properties={"difficulty": "hard", "max-players": max_players, "motd":"ITS ALIVE", "gamemode": gamemode}, init_properties=True)
+    update_server_properties(container_id=mc_server_container.id, updated_properties={"difficulty": "hard", "max-players": str(max_players), "motd":"ITS ALIVE", "gamemode": str(gamemode)}, init_properties=True)
 
 
 def update_server_properties(container_id="mc-default", updated_properties={}, init_properties=False):
@@ -69,14 +72,14 @@ def update_server_properties(container_id="mc-default", updated_properties={}, i
         Key value pairs of all the settings wished to be updated
     init_properties: False
         DO NOT USED THIS, ONLY NEEDS TO BE USED FROM THE MAKE SERVER CALL
-        Where or not to properly config the server.properties file to be used with config parser
+        Makes server.properties the first time into a file type similar to .ini
     Returns
     -------
     String
         Id of the docker container that was created using this function
     """
     if container_id == None:
-        return
+        return False
     client = docker.from_env()
     container = client.containers.get(container_id)
 
@@ -94,7 +97,7 @@ def update_server_properties(container_id="mc-default", updated_properties={}, i
         print("[INFO] Succesfully recieved server tar archive")
     else:
         print("Failed to find server properties tar archive")
-        return
+        return False
     
     # Un tar it
     server_tar_file = tarfile.TarFile(name=tar_file)
@@ -102,7 +105,6 @@ def update_server_properties(container_id="mc-default", updated_properties={}, i
     
     # Editing the server.properties file
     server_properties_content = buffer.read().decode()
-    string_buffer = io.StringIO(server_properties_content)
     server_tar_file.close() # We have the buffer now and now we can close the tarfile connection
     os.remove(tar_file)
 
@@ -116,6 +118,10 @@ def update_server_properties(container_id="mc-default", updated_properties={}, i
 
     configparser = ConfigParser()
     configparser.read_string(string_content)
+
+    for key in updated_properties:
+        if configparser["root"].get(key) == None:
+            return False
 
     for key in updated_properties:
         configparser["root"][key] = updated_properties[key]
@@ -139,12 +145,12 @@ def update_server_properties(container_id="mc-default", updated_properties={}, i
     container.put_archive("/data", data)
     
     os.remove(tar_file)
-
+    
     container.restart()
     
     print("[INFO] Succesfully updated the server properties\n")
 
-    return
+    return True
 
 def run_docker_mc_command(container_id=None, message=""):
     """
@@ -204,8 +210,10 @@ def stop_docker(container_id=None):
 
         container = client.containers.get(container_id)
         container.stop()
+        return True
     except Exception as e:
         print(e)
+        return False
 
 def start_docker(container_id=None):
     """
@@ -227,8 +235,10 @@ def start_docker(container_id=None):
     
         container = client.containers.get(container_id)
         container.start()
+        return True
     except Exception as e:
         print(e)
+        return False
 
 def remove_docker(container_id=None):
     """
@@ -247,8 +257,10 @@ def remove_docker(container_id=None):
         container = client.containers.get(container_id)
         container.stop()
         container.remove(v=True, link=False, force=True)
+        return True
     except Exception as e:
         print(e)
+        return False
 
 # TODO: Finish getting the world folder
 def get_server_world(container_id = None):
@@ -282,7 +294,7 @@ def get_server_world(container_id = None):
 
 if __name__ == "__main__":
     make_server()
-    #make_server(name="mc-default-2", port=25567)
+    #make_server()
     #run_docker_mc_command("mc", "/banlist players")
     #stop_docker("mc")  
     #start_docker("mc")  
