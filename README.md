@@ -20,5 +20,3 @@ Clone repo
 ## Run this 
 
 Start the server using `python -m flask --app "app.py" run` and visit localhost:5000 to see it.
-
-# TESTTING
