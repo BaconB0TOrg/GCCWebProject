@@ -4,7 +4,6 @@ from flask import Flask, escape
 from flask import render_template, url_for, redirect, flash, jsonify, request, session
 from flask_sqlalchemy import SQLAlchemy
 from passlib.hash import sha256_crypt
-import time
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 dbpath = os.path.join(scriptdir, 'server_hosting.sqlite3')
