@@ -17,9 +17,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-#####
-# Utilities
-####
+#########################
+# Utilities             #
+#########################
 
 def flash_form_errors(form):
   for field,error in form.errors.items():
