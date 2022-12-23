@@ -1,6 +1,10 @@
 {% extends "root.html" %}
 
 {% block title %}Home{% endblock %}
+{% block seo %}
+<meta name="description" content="Create a Minecraft Server any of your friends can join with full customizability!">
+<meta name="author" content="Ethan Brown">
+{% endblock %}
 {% block head %}
   <script src="/static/scripts/home.js"></script>
 {% endblock %}
@@ -24,11 +28,11 @@
             <li>Cheap</li>
             <li>Fast</li>
             <li>Easy</li>
-            <li>On Your Schedule</li>
           </ul>
         </div>
         <div class="d-none d-md-block col-6">
           <ul>
+            <li>On Your Schedule</li>
             <li>Custom Server Roles</li>
             <li>No Built-In Cash Shop</li>
           </ul>
@@ -48,7 +52,6 @@
   </div>
 </div>
 <div class="container mt-4">
-  <p class="text-center"><a class="green btn btn-primary btn-lg" href="#" role="button">Get Started</a></p>
   <p class="border p-3 rounded-1">
     Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde voluptatibus vitae pariatur ex blanditiis? Qui dolore voluptatibus sunt facere animi, facilis possimus, atque maiores earum in ullam vel debitis a!
     Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde voluptatibus vitae pariatur ex blanditiis? Qui dolore voluptatibus sunt facere animi, facilis possimus, atque maiores earum in ullam vel debitis a!
@@ -57,5 +60,10 @@
     Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde voluptatibus vitae pariatur ex blanditiis? Qui dolore voluptatibus sunt facere animi, facilis possimus, atque maiores earum in ullam vel debitis a!
     Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde voluptatibus vitae pariatur ex blanditiis? Qui dolore voluptatibus sunt facere animi, facilis possimus, atque maiores earum in ullam vel debitis a!
   </p>
+  {% if session['logged-in'] %}
+  <p class="text-center"><a class='btn btn-lg active green' role="button" aria-pressed="true" href="/servers/create/">Create a Server</a></p>
+  {% else %}
+  <p class="text-center"><a class='btn btn-lg active green' role="button" aria-pressed="true" href="/register/">Get Started</a></p>
+  {% endif %}
 </div>
 {% endblock %}
