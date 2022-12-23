@@ -29,16 +29,16 @@ def flash_form_errors(form):
 # Route Handlers        #
 #########################
 
-# @app.route('/site-map/')
-# def site_map():
-#   links = []
-#   for rule in app.url_map.iter_rules():
-#     if 'GET' in rule.methods:
-#       rule = escape(rule.rule)
-#       links.append(f'<a href={rule}>{rule}</a>')
-#   # links is now a list of url's with their parameters
-#   linksString = '<br>'.join(links)
-#   return linksString
+@app.route('/site-map/')
+def site_map():
+  links = []
+  for rule in app.url_map.iter_rules():
+    if 'GET' in rule.methods:
+      rule = escape(rule.rule)
+      links.append(f'<a href={rule}>{rule}</a>')
+  # links is now a list of url's with their parameters
+  linksString = '<br>'.join(links)
+  return linksString
 
 @app.get('/')
 def redirect_to_welcome():
@@ -105,7 +105,7 @@ def post_login():
     flash_form_errors(form)
     return redirect(url_for('get_login'))
 
-@app.route('/log-out/')
+@app.route('/logout/')
 def get_log_out():
   if request.method != 'GET':
     print(f"[WARN] User tried to {request.method} to {url_for('get_log_out')}. Only GET is allowed")
@@ -207,7 +207,7 @@ def post_register():
         flash_form_errors(form)
         return redirect(url_for('get_register'))
 
-@app.get('/server/')
+@app.get('/servers/')
 def list_server():
   email=session.get('user-email')
   user = User.query.filter_by(email=email).first()
@@ -218,7 +218,7 @@ def list_server():
   # servers = Server.query.filter_by(owner_id=user.id).all()
   return render_template('server_list.html', servers=servers, user_id=user_id)
 
-@app.get('/server/create/')
+@app.get('/servers/create/')
 def get_create_server():
   if not session.get('logged-in'):
     flash("You need to be logged in to see that page!")
@@ -229,7 +229,7 @@ def get_create_server():
   form.tags.choices = [(t.id, t.name) for t in tags]
   return render_template('new_server.html', form=form)
 
-@app.post('/server/create/')
+@app.post('/servers/create/')
 def post_create_server():
   if not session.get('logged-in'):
     print(f'[INFO] Anonymous user tried to {request.method} {url_for("post_create_server")}')
@@ -269,7 +269,7 @@ def post_create_server():
     flash_form_errors(form)
     return redirect(url_for('get_create_server'))
 
-@app.get('/server/<int:server_id>/')
+@app.get('/servers/<int:server_id>/')
 def show_server(server_id):
   server = Server.query.filter_by(id=server_id).first()
   if not server:
@@ -285,7 +285,7 @@ def show_server(server_id):
 
   return render_template('server.html', server=server)
 
-@app.get('/server/<int:server_id>/update/')
+@app.get('/servers/<int:server_id>/update/')
 def get_update_server(server_id):
   if not session.get('logged-in'):
     print(f'[INFO] Anonymous user tried to {request.method} {url_for("get_update_server")}')
@@ -320,7 +320,7 @@ def get_update_server(server_id):
   form.tags.choices = [(t.id, t.name) for t in tags]
   return render_template('update_server.html', form=form)
 
-@app.post('/server/<int:server_id>/update/')
+@app.post('/servers/<int:server_id>/update/')
 def post_update_server(server_id):
   if not session.get('logged-in'):
     print(f'[INFO] Anonymous user tried to {request.method} {url_for("post_update_server")}')
@@ -369,7 +369,7 @@ def post_update_server(server_id):
     flash_form_errors(form)
     return redirect(url_for('get_update_server'))
 
-@app.get('/server/<int:server_id>/delete')
+@app.get('/servers/<int:server_id>/delete')
 def delete_server(server_id):
   if not session.get('logged-in'):
     print(f'Anonymous user tried to delete server {server_id}')
@@ -388,7 +388,7 @@ def delete_server(server_id):
     flash("You don't have permission to do that!")
     return redirect(url_for('list_server'))
 
-@app.get('/server/<int:server_id>/terminal/')
+@app.get('/servers/<int:server_id>/terminal/')
 def get_terminal(server_id):
   if server_id == None:
     return redirect('400.html', 400)
