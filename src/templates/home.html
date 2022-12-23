@@ -9,60 +9,53 @@
 <div class="jumbotron">
   <div class="container">
     <h1 class="display-3">Minecraft Server Hosting</h1>
-    <p>Search for servers others have hosted here, or start one yourself!</p>
-    <!-- <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p> -->
+    <!-- <p>Search for servers others have hosted here, or start one yourself!</p> -->
   </div>
 </div>
 
-<div class="container-fluid">
-<div class="row">
-  <!-- <div class="col-sm-12 col-lg-6 col-xl-4">
-    <h2>Events</h2>
-    <div class="row">
-        <h4>Event x:</h4>
-        <p>Event Info</p>
+<div class="teal row rounded-1">
+  <div class="jumbotron">
+    <div class="container py-2">
+      <h1 class="display-4 text-center">Why Us</h1>
+      <!-- <hr class="my-3"> -->
+      <div class="row lead" id="reasons">
+        <div class="d-none d-md-block col-6">
+          <ul>
+            <li>Cheap</li>
+            <li>Fast</li>
+            <li>Easy</li>
+            <li>On Your Schedule</li>
+          </ul>
+        </div>
+        <div class="d-none d-md-block col-6">
+          <ul>
+            <li>Custom Server Roles</li>
+            <li>No Built-In Cash Shop</li>
+          </ul>
+        </div>
+        <div class="d-md-none col-12">
+          <ul>
+            <li>Cheap</li>
+            <li>Fast</li>
+            <li>Easy</li>
+            <li>On Your Schedule</li>
+            <li>Custom Server Roles</li>
+            <li>No Built-In Cash Shop</li>
+          </ul>
+        </div>
+      </div>
     </div>
-    <div class="row">
-        <h4>Event y:</h4>
-        <p>Event Info</p>
-    </div>
-
-    {#Not Implemented#}
-    <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
-    
-  </div> -->
-  <div class="col-sm-12 col-lg-8 col-xl-8">
-    <h2>Featured Servers</h2>
-    {% for server in servers %}
-    <div class="row">
-        <h4>{{server.name}}</h4>
-        <p>{{server.description}}</p>
-    </div>
-    <p><a class="btn btn-secondary" href="{{url_for('show_server', server_id=server.id)}}" role="button">View details &raquo;</a></p>
-    {% endfor %}
-
   </div>
-  {# user exists and owns at least one server #}
-  {% if user != None and (user.servers|length != 0) %}
-  <div class="col-sm-12 col-lg-4 col-xl-4">
-    <h2>Your Servers</h2>
-    <div id="users_servers">
-      {% for server in user.servers %}
-      <input type="hidden" data-server-id="{{server.id}}" data-docker-id="{{server.docker_id}}" value=""/>
-      {% endfor %}
-    </div>
-    {% for server in user.servers %}
-    <p>Server Info:
-      <ul>
-        <li id="{{server.id}}_status">Name: {{server.name}}</li>
-        <li>Number of players online: <span id="{{server.id}}_current_players">0</span>/{{server.max_players}}</li>
-      </ul>
-    </p>
-
-    <!-- Not Implemented -->
-    <p><a class="btn btn-secondary" href="{{url_for('show_server', server_id=server.id)}}" role="button">Show Server &raquo;</a></p>
-    {% endfor %}
-  </div>
-  {% endif %}
+</div>
+<div class="container mt-4">
+  <p class="text-center"><a class="green btn btn-primary btn-lg" href="#" role="button">Get Started</a></p>
+  <p class="border p-3 rounded-1">
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde voluptatibus vitae pariatur ex blanditiis? Qui dolore voluptatibus sunt facere animi, facilis possimus, atque maiores earum in ullam vel debitis a!
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde voluptatibus vitae pariatur ex blanditiis? Qui dolore voluptatibus sunt facere animi, facilis possimus, atque maiores earum in ullam vel debitis a!
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde voluptatibus vitae pariatur ex blanditiis? Qui dolore voluptatibus sunt facere animi, facilis possimus, atque maiores earum in ullam vel debitis a!
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde voluptatibus vitae pariatur ex blanditiis? Qui dolore voluptatibus sunt facere animi, facilis possimus, atque maiores earum in ullam vel debitis a!
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde voluptatibus vitae pariatur ex blanditiis? Qui dolore voluptatibus sunt facere animi, facilis possimus, atque maiores earum in ullam vel debitis a!
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde voluptatibus vitae pariatur ex blanditiis? Qui dolore voluptatibus sunt facere animi, facilis possimus, atque maiores earum in ullam vel debitis a!
+  </p>
 </div>
 {% endblock %}
