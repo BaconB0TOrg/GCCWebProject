@@ -56,7 +56,7 @@ def server_create(mc_server_container, max_players, gamemode):
             attached.close()
             break
 
-    update_server_properties(container_id=mc_server_container.id, updated_properties={"motd":"MC Server Hosted Server"}, init_properties=True)
+    update_server_properties(container_id=mc_server_container.id, updated_properties={"max-players": str(max_players), "gamemode":gamemode, "motd":"MC Server Hosted Server"}, init_properties=True)
 
 
 def update_server_properties(container_id="mc-default", updated_properties={}, init_properties=False):
