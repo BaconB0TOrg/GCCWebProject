@@ -17,7 +17,7 @@
 							{{ form.hidden_tag() }}
 							<div class="mb-3">
 								<label class="mb-2 white-s" for="username">Username</label>
-								{{ form.username(class="form-control", id="username", value="") }}
+								{{ form.username(class="form-control", id="username", value="", required="required") }}
 								<div class="invalid-feedback">
 									Username is invalid
 								</div>
@@ -25,7 +25,7 @@
 
                             <div class="mb-3">
 								<label class="mb-2 white-s" for="email">Email</label>
-								{{ form.email(class="form-control", id="email") }}
+								{{ form.email(class="form-control", id="email", required="required") }}
 								<div class="invalid-feedback">
 									Email is invalid
 								</div>
@@ -33,7 +33,7 @@
 
                             <div class="mb-3">
 								<label class="mb-2 white-s" for="c-email">Confirm Email</label>
-								{{ form.confirm_email(class="form-control", id="c-email") }}
+								{{ form.confirm_email(class="form-control", id="c-email", required="required") }}
 								<div class="invalid-feedback">
 									Email is invalid
 								</div>
@@ -43,7 +43,7 @@
 								<div class="mb-2 w-100">
 									<label class="white-s" for="password">Password</label>
 								</div>
-                                {{ form.password(class="form-control", id="password") }}
+                                {{ form.password(class="form-control", id="password", required="required") }}
 								<div class="invalid-feedback">
 									Password is required
 								</div>
@@ -51,7 +51,7 @@
 
                             <div class="mb-3">
 								<label class="mb-2 white-s" for="c-password">Confirm Password</label>
-								{{ form.confirm_password(class="form-control", id="c-password") }}
+								{{ form.confirm_password(class="form-control", id="c-password", required="required") }}
 								<div class="invalid-feedback">
 									Confirm password is required
 								</div>

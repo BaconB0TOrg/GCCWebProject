@@ -17,7 +17,7 @@
 							{{ form.hidden_tag() }}
 							<div class="mb-3">
 								<label class="mb-2 white-s" for="username">Username</label>
-								{{ form.username(class="form-control", id="username", value="") }}
+								{{ form.username(class="form-control", id="username", value="", required="required") }}
 								<div class="invalid-feedback">
 									Username is invalid
 								</div>
@@ -30,7 +30,7 @@
 										Forgot Password?
 									</a>
 								</div>
-                                {{ form.password(class="form-control", id="password") }}
+                                {{ form.password(class="form-control", id="password", required="required") }}
 								<div class="invalid-feedback">
 									Password is required
 								</div>
