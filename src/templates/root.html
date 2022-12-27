@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="h-100">
 
 <head>
   <meta charset="utf-8">
@@ -20,9 +20,9 @@
   {% block head %} {% endblock %}
 </head>
 
-<body class="blue">
+<body class="d-flex flex-column h-100">
   {% block nav %}
-  <nav class="navbar navbar-expand-md navbar-dark sticky-top blue">
+  <nav class="navbar navbar-expand-md navbar-light sticky-top border-bottom bg-white">
     <div class="container-fluid">
       <a class="navbar-brand" href="/">
         <img src="https://via.placeholder.com/125x50" alt="Company Logo" width="125" height="50">
@@ -70,17 +70,22 @@
     </div>
   </nav>
   {% endblock %}
-  {% include "flash.html" %}
-  <div class="p-4">
+  <main class="p-4">
+    {% include "flash.html" %}
     {% block content %} {% endblock %}
-  </div>
+  </main>
+  {% block footer %}
+  <footer class="footer mt-auto py-3 border-top">
+    {% block footer_content %}
+    <div class="container">
+      <span class="text-muted">&copy;Minidigo Hosting 2022</span>
+    </div>
+    {% endblock %}
+  </footer>
+  {% endblock %}
   <!-- JQuery -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"
     integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
-
-<footer>
-  {% block footer %} {% endblock %}
-</footer>
