@@ -56,7 +56,7 @@ def server_create(mc_server_container, max_players, gamemode):
             attached.close()
             break
 
-    update_server_properties(container_id=mc_server_container.id, updated_properties={"difficulty": "hard", "max-players": str(max_players), "motd":"ITS ALIVE", "gamemode": str(gamemode)}, init_properties=True)
+    update_server_properties(container_id=mc_server_container.id, updated_properties={"max-players": str(max_players), "gamemode":gamemode, "motd":"MC Server Hosted Server"}, init_properties=True)
 
 
 def update_server_properties(container_id="mc-default", updated_properties={}, init_properties=False):
@@ -180,13 +180,11 @@ def run_docker_mc_command(container_id=None, message=""):
             # connection made but rcon not ready
             print(f"Failed to run RCON command, exit code {output[0]}")
             print(f"error: {output[1]}")
-            return "Something went wrong, please try again shortly"
+            raise Exception("[ERROR] Failed to RCON")
         # if everything is good
         return output[1].decode()
     except Exception as e:
-        print(e)
-    # exception is thrown. Docker fails to connect.
-    return "Something went wrong, please make sure your server is running."
+        return e
 
 def stop_docker(container_id=None):
     """
@@ -228,7 +226,7 @@ def start_docker(container_id=None):
     None
     """
     if container_id is None:
-        return
+        return None
     try:
         client = docker.from_env()
     
@@ -249,7 +247,7 @@ def remove_docker(container_id=None):
     Return: None
     """
     if container_id is None:
-        return
+        return None
     client = docker.from_env()
 
     try:
@@ -262,7 +260,7 @@ def remove_docker(container_id=None):
         return False
 
 # TODO: Finish getting the world folder
-def get_server_world(container_id = None):
+#def get_server_world(container_id = None):
     """
     Function to collect the mc servers world files
 
@@ -272,14 +270,14 @@ def get_server_world(container_id = None):
     Default to None, used to specify the which containers world to grab
     """
 
-    if container_id is None:
-        return
-    client = docker.from_env()
+#    if container_id is None:
+#       return None
+#    client = docker.from_env()
 
-    try:
-        container = client.containers.get(container_id)
+#    try:
+#        container = client.containers.get(container_id)
         # Get the requested containers_id tar file
-        tar_archive_world = container.get_archive("/data/world")
+#        tar_archive_world = container.get_archive("/data/world")
         # Delete the old server
         #with open("test.tar", "wb") as f: # Used for testing purposes
         #   for x in tar_archive_world[0]:
@@ -287,12 +285,12 @@ def get_server_world(container_id = None):
         
         #f.close()
 
-    except Exception as e:
-        print(e)
+#    except Exception as e:
+#        print(e)
 
-
+"""Debug code"""
 if __name__ == "__main__":
-    #cdmake_server()
+    #make_server()
     #make_server()
     #run_docker_mc_command("mc", "/banlist players")
     #stop_docker("mc")  

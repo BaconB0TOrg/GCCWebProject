@@ -14,11 +14,9 @@ Clone repo
 
 
 `pip install flask docker flask-sqlalchemy Flask-WTF email_validator passlib`<br>
-`pip install -e .`
-`pip install -r requirements-dev.txt`
+`pip install -e .`<br>
+`pip install -r requirements-dev.txt`<br>
 
 ## Run this 
 
 Start the server using `python -m flask --app "app.py" run` and visit localhost:5000 to see it.
-
-# TESTTING
