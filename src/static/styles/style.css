@@ -29,3 +29,11 @@
 a.signout {
     color:orangered;
 }
+
+.btn-primary{
+    background-color: #88A47C !important;
+}
+
+.white-s{
+    color: whitesmoke !important;
+}
