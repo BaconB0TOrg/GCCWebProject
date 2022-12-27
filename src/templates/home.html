@@ -51,8 +51,8 @@
     </div>
   </div>
 </div>
-<div class="container mt-4">
-  <p class="border p-3 rounded-1">
+<div class="border blue container mt-4 rounded-1">
+  <p class="p-3">
     Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde voluptatibus vitae pariatur ex blanditiis? Qui dolore voluptatibus sunt facere animi, facilis possimus, atque maiores earum in ullam vel debitis a!
     Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde voluptatibus vitae pariatur ex blanditiis? Qui dolore voluptatibus sunt facere animi, facilis possimus, atque maiores earum in ullam vel debitis a!
     Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde voluptatibus vitae pariatur ex blanditiis? Qui dolore voluptatibus sunt facere animi, facilis possimus, atque maiores earum in ullam vel debitis a!
@@ -60,10 +60,12 @@
     Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde voluptatibus vitae pariatur ex blanditiis? Qui dolore voluptatibus sunt facere animi, facilis possimus, atque maiores earum in ullam vel debitis a!
     Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde voluptatibus vitae pariatur ex blanditiis? Qui dolore voluptatibus sunt facere animi, facilis possimus, atque maiores earum in ullam vel debitis a!
   </p>
-  {% if session['logged-in'] %}
-  <p class="text-center"><a class='btn btn-lg active green' role="button" aria-pressed="true" href="/servers/create/">Create a Server</a></p>
-  {% else %}
-  <p class="text-center"><a class='btn btn-lg active green' role="button" aria-pressed="true" href="/register/">Get Started</a></p>
-  {% endif %}
+  <p class="text-center">
+    {% if session['logged-in'] %}
+    <a class='btn btn-lg active green' role="button" aria-pressed="true" href="/servers/create/">Create a Server</a>
+    {% else %}
+    <a class='btn btn-lg active green' role="button" aria-pressed="true" href="/register/">Get Started</a>
+    {% endif %}
+  </p>
 </div>
 {% endblock %}
