@@ -1,0 +1,31 @@
+.teal {
+    background-color: #227C70 !important;
+    color: white !important;
+}
+
+.btn.teal {
+    border-color: #1d6a5f !important;
+}
+
+.blue {
+    background-color: #1C315E !important;
+    color: white;
+}
+
+.green {
+    background-color: #88A47C !important;
+    color: black !important;
+}
+
+.btn.green {
+    border-color: #51624a !important;
+}
+
+.beige {
+    background-color: #E6E2C3 !important;
+    color: black !important;
+}
+
+a.signout {
+    color:orangered;
+}

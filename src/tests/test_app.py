@@ -1,3 +1,3 @@
 def test_request_example(client):
     response = client.get("/welcome/")
-    assert b"<h2>Featured Servers</h2>" in response.data
+    assert b'<h1 class="display-3">Minecraft Server Hosting</h1>' in response.data
