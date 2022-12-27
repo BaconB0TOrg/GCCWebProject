@@ -292,7 +292,7 @@ def get_server_world(container_id = None):
 
 
 if __name__ == "__main__":
-    #make_server()
+    #cdmake_server()
     #make_server()
     #run_docker_mc_command("mc", "/banlist players")
     #stop_docker("mc")  
