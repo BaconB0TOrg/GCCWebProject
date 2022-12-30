@@ -405,9 +405,9 @@ def get_terminal(server_id):
   
   return render_template('terminal.html', docker_id=server.docker_id)
 
-@app.get('/servers/create/tag')
+@app.get('/server/create/tag')
 def get_server_create_tags():
-  return render_template('new_server_tags.html')
+  return render_template('new_server_tag.html')
 
 @app.get('/mc_command/')
 def mc_command():
