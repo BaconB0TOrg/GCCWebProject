@@ -8,7 +8,7 @@ from passlib.hash import sha256_crypt
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 dbpath = os.path.join(scriptdir, 'server_hosting.sqlite3')
 
-from forms import LoginForm, RegisterForm, ServerForm, ChangeEmailForm, ServerUpdateForm, CreateServerTagListForm
+from forms import LoginForm, RegisterForm, ServerForm, ChangeEmailForm, ServerUpdateForm, CreateServerForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'somesecretkeythatislongenoughcool'
@@ -405,12 +405,12 @@ def get_terminal(server_id):
   
   return render_template('terminal.html', docker_id=server.docker_id)
 
-@app.get('/server/create/tag')
+@app.get('/server/create')
 def get_server_create_tags():
-  form = CreateServerTagListForm()
+  form = CreateServerForm()
   form.tags.choices = [(t.id, t.name) for t in Tag.query.all()]
 
-  return render_template('new_server_tag.html', form=form)
+  return render_template('server_creation.html', form=form)
 
 @app.get('/mc_command/')
 def mc_command():
