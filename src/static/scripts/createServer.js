@@ -46,8 +46,35 @@ class CustomSelect {
     }
 }
 
+// Helper function to set up an event listener that trasition between two divs
+function trasition_event(button, startingDiv, endingDiv){
+    button.addEventListener("click", () => {
+        // remove visible item css from the starting div
+        startingDiv.classList.remove("visible__item");
+        // hide the starting div and show the ending div
+        startingDiv.classList.add("hidden__item"); // current div trasitioned out
+        // remove the hidden item css from the ending div
+        endingDiv.classList.remove("hidden__item");
+        // add the visible item css to the ending div 
+        endingDiv.classList.add("visible__item"); // next div trasitioned in
+    });
+}
+
 window.addEventListener('DOMContentLoaded', (event) => {
     document.querySelectorAll(".custom-select").forEach(selectElement => {
         new CustomSelect(selectElement);
     });
+
+    // Set up event listeners for the progression of the form
+    // Div for sections of the form
+    const tagDiv = document.getElementById("tag__form")
+    const optionDiv = document.getElementById("options")
+    const serverDiv = document.getElementById("server__config")
+
+    // Next Buttons
+    const tagButton = document.getElementById("tag__next");
+    const optionsButton = document.getElementById("options__next");
+
+    trasition_event(tagButton ,tagDiv, optionDiv); 
+    trasition_event(optionsButton, optionDiv, serverDiv); 
 });

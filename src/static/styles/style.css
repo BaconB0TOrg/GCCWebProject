@@ -27,14 +27,14 @@
 }
 
 a.signout {
-    color:orangered;
+    color: orangered;
 }
 
-.btn-primary{
+.btn-primary {
     background-color: #88A47C !important;
 }
 
-.white-s{
+.white-s {
     color: whitesmoke !important;
 }
 
@@ -60,4 +60,17 @@ a.signout {
 .select__item--selected {
     background: #88A47C;
     color: whitesmoke;
+}
+
+.visible__item {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 2s linear;
+}
+
+.hidden__item {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s 2s, opacity 2s linear, height 0 1s;
+    height: 0;
 }
