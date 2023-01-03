@@ -47,7 +47,7 @@ class CustomSelect {
 }
 
 // Helper function to set up an event listener that trasition between two divs
-function trasition_event(button, startingDiv, endingDiv){
+function trasition_event_fade(button, startingDiv, endingDiv){
     button.addEventListener("click", () => {
         // remove visible item css from the starting div
         startingDiv.classList.remove("visible__item");
@@ -57,6 +57,19 @@ function trasition_event(button, startingDiv, endingDiv){
         endingDiv.classList.remove("hidden__item");
         // add the visible item css to the ending div 
         endingDiv.classList.add("visible__item"); // next div trasitioned in
+    });
+}
+
+// Helper function that toggles the dropdown of the div passed
+function trasition_event_dropdown(button, div){
+    button.addEventListener("click", () => {
+        if(div.classList.contains("dropdown")){
+            div.classList.remove("dropdown"); //remove dropdown
+            div.classList.add("hide");
+        } else {
+            div.classList.remove("hide");
+            div.classList.add("dropdown"); // add dropdown
+        }
     });
 }
 
@@ -70,11 +83,17 @@ window.addEventListener('DOMContentLoaded', (event) => {
     const tagDiv = document.getElementById("tag__form")
     const optionDiv = document.getElementById("options")
     const serverDiv = document.getElementById("server__config")
+    const advOptions = document.getElementById("advanced__options")
 
     // Next Buttons
     const tagButton = document.getElementById("tag__next");
     const optionsButton = document.getElementById("options__next");
 
-    trasition_event(tagButton ,tagDiv, optionDiv); 
-    trasition_event(optionsButton, optionDiv, serverDiv); 
+    // advanced options link
+    const advLine = document.getElementById("adv")
+
+    trasition_event_fade(tagButton ,tagDiv, optionDiv); 
+    trasition_event_fade(optionsButton, optionDiv, serverDiv);
+    
+    trasition_event_dropdown(advLine, advOptions);
 });

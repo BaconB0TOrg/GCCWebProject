@@ -74,3 +74,18 @@ a.signout {
     transition: visibility 0s 2s, opacity 2s linear, height 0 1s;
     height: 0;
 }
+
+.hover__item {
+    cursor: pointer;
+}
+
+.hide{
+    max-height: 0;
+    transition: max-height 0.15s ease-out;
+    overflow: hidden;
+}
+
+.dropdown {
+    max-height: 700px;
+    transition: max-height 0.25s ease-in;
+}
