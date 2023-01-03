@@ -77,6 +77,8 @@ a.signout {
 
 .hover__item {
     cursor: pointer;
+    color: #88A47C;
+    
 }
 
 .hide{
