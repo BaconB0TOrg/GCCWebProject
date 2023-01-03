@@ -77,8 +77,7 @@ a.signout {
 
 .hover__item {
     cursor: pointer;
-    color: #88A47C;
-    
+    color: #88A47C;    
 }
 
 .hide{
@@ -90,4 +89,8 @@ a.signout {
 .dropdown {
     max-height: 700px;
     transition: max-height 0.25s ease-in;
+}
+
+#adv:hover {
+    color: whitesmoke !important;
 }
