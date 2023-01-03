@@ -39,34 +39,56 @@
 								{{form.difficulty(id="difficulty", class="form-control")}}
 							</div>
 							<div class="mb-3">
-								<label class="mb-2 white-s" for="pvp">Player Vs. Player</label>
-								{{form.pvp(id="pvp", class="form-check-input")}}
-								<div>
+								<a id="adv" class="hover__item">Advanced Options -></a>
+								<div id="advanced__options" class="hide">
 									<div class="mb-3">
-										<a href="#">Advanced Options -></a>
-										<div id="advanced__options">
-											{{form.hardcore(class="form-check-input", id="hdc")}}
-											<label class="form-check-label mb-2 white-s" for="hdc">
-												Hardcore
-											</label>
-										</div>
+										{{form.hardcore(class="form-check-input", id="pvp")}}
+										<label class="form-check-label mb-2 white-s" for="pvp">
+											Player Vs. Player
+										</label>
 									</div>
-									<div class="d-flex align-items-center">
-										<button type="button" class="btn btn-primary ms-auto" id="options__next">
-											Next
-										</button>
+									<div class="mb-3">
+										{{form.hardcore(class="form-check-input", id="hdc")}}
+										<label class="form-check-label mb-2 white-s" for="hdc">
+											Hardcore
+										</label>
+									</div>
+									<div class="mb-3">
+										{{form.hardcore(class="form-check-input", id="snpc")}}
+										<label class="form-check-label mb-2 white-s" for="snpc">
+											Spawn NPCS
+										</label>
+									</div>
+									<div class="mb-3">
+										{{form.hardcore(class="form-check-input", id="genstr")}}
+										<label class="form-check-label mb-2 white-s" for="getstr">
+											Generate Structures
+										</label>
 									</div>
 								</div>
+								<div class="d-flex align-items-center">
+									<button type="button" class="btn btn-primary ms-auto" id="options__next">
+										Next
+									</button>
+								</div>
+
 							</div>
 						</div>
 
 						<div id="server__config" class="hidden__item"> <!-- Server name and description -->
 							<h1 class="fs-4 text-center fw-bold mb-4 blue">Final Touches</h1>
-							<div class="row">
-								{{form.server_name()}}
+							<div class="mb-3">
+								<label class="mb-2 white-s" for="server_name">
+									Server Name
+								</label>
+								{{form.server_name(id="server_name", class="form-control")}}
 							</div>
-							<div class="row">
-								{{form.server_description()}}
+							<div class="mb-3">
+								<label class="mb-2 white-s" for="server_desc">
+									Server Description
+								</label>
+								{{form.server_description(id="server_desc", class="form-control",
+								style="height:150px")}}
 							</div>
 							<div class="d-flex align-items-center">
 								{{form.submit(type="submit", class="btn btn-primary ms-auto")}}
