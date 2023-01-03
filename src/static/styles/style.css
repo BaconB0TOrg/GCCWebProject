@@ -37,3 +37,27 @@ a.signout {
 .white-s{
     color: whitesmoke !important;
 }
+
+.select {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: space-around;
+    max-width: 600px;
+    gap: 10px;
+}
+
+.select__item {
+    padding: 8px;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 15px;
+    background: whitesmoke;
+    transition: background 0.1s;
+    color: #1C315E;
+}
+
+.select__item--selected {
+    background: #88A47C;
+    color: whitesmoke;
+}
