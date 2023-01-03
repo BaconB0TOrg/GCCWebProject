@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, EmailField, PasswordField, SubmitField, HiddenField, TextAreaField, SelectField, SelectMultipleField, IntegerField
 from wtforms.validators import InputRequired, EqualTo, Email, Length, Optional, NumberRange
+from wtforms.widgets import Select
 
 class LoginForm(FlaskForm):
     username = StringField("Username", validators=[InputRequired()])
@@ -119,3 +120,7 @@ class ServerUpdateForm(FlaskForm):
 class ChangeEmailForm(FlaskForm):
     email = EmailField("New Email", validators=[InputRequired(), Email()])
     submit = SubmitField("Change email")
+
+class CreateServerTagListForm(FlaskForm):
+    tags = SelectMultipleField("Tags", validators=[Optional()], coerce=int)
+    submit = SubmitField("Next")
