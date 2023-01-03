@@ -66,9 +66,11 @@ function trasition_event_dropdown(button, div){
         if(div.classList.contains("dropdown")){
             div.classList.remove("dropdown"); //remove dropdown
             div.classList.add("hide");
+            button.textContent = "Advanced Options ▸";
         } else {
             div.classList.remove("hide");
             div.classList.add("dropdown"); // add dropdown
+            button.textContent = "Advanced Options ▾";
         }
     });
 }
