@@ -1,0 +1,110 @@
+{% extends "root.html" %}
+
+{% block title %} Create a new Server {% endblock %}
+
+{% block content %}
+<script src="{{url_for('static', filename='/scripts/createServer.js')}}"></script>
+<section class="h-100">
+	<div class="container h-100">
+		<div class="row justify-content-sm-center h-100">
+			<div class="text-center my-5">
+				<img src="https://via.placeholder.com/125x50" alt="logo" width="100">
+			</div>
+			<div class="card shadow-lg blue w-50">
+				<div class="card-body p-5">
+					<form method="POST" class="needs-validation" novalidate="" autocomplete="off">
+						{{ form.hidden_tag() }}
+						<div id="tag__form" class="visible__item"> <!-- Tag Form section -->
+							<h1 class="fs-4 text-center fw-bold mb-4 blue">Choose Tags</h1>
+							{{form.tags(class="custom-select")}}
+							<div class="d-flex align-items-center">
+								<button type="button" class="btn btn-primary ms-auto" id="tag__next">
+									Next
+								</button>
+							</div>
+						</div>
+
+						<div id="options" class="hidden__item"> <!-- Server options -->
+							<h1 class="fs-4 text-center fw-bold mb-4 blue">Server Options</h1>
+							<div class="mb-3">
+								<label class="mb-2 white-s" for="max_players">Max Players</label>
+								{{form.number_of_players(id="max_players", class="form-control")}}
+							</div>
+							<div class="mb-3">
+								<label class="mb-2 white-s" for="gamemode">Gamemode</label>
+								{{form.gamemode(id="gamemode", class="form-control")}}
+							</div>
+							<div class="mb-3">
+								<label class="mb-2 white-s" for="difficulty">Difficulty</label>
+								{{form.difficulty(id="difficulty", class="form-control")}}
+							</div>
+							<div class="mb-3">
+								<a id="adv" class="hover__item link__server">Advanced Options ▸</a>
+								<div id="advanced__options" class="hide">
+									<div class="mb-3">
+										{{form.hardcore(class="form-check-input", id="pvp")}}
+										<label class="form-check-label mb-2 white-s" for="pvp">
+											Player Vs. Player
+										</label>
+									</div>
+									<div class="mb-3">
+										{{form.hardcore(class="form-check-input", id="hdc")}}
+										<label class="form-check-label mb-2 white-s" for="hdc">
+											Hardcore
+										</label>
+									</div>
+									<div class="mb-3">
+										{{form.hardcore(class="form-check-input", id="snpc")}}
+										<label class="form-check-label mb-2 white-s" for="snpc">
+											Spawn NPCS
+										</label>
+									</div>
+									<div class="mb-3">
+										{{form.hardcore(class="form-check-input", id="genstr")}}
+										<label class="form-check-label mb-2 white-s" for="getstr">
+											Generate Structures
+										</label>
+									</div>
+								</div>
+								<div class="d-flex justify-content-end align-items-center">
+									<button type="button" class="btn btn-secondary mx-1" id="options__back">
+										Back
+									</button>
+									<button type="button" class="btn btn-primary mx-1" id="options__next">
+										Next
+									</button>
+								</div>
+
+							</div>
+						</div>
+
+						<div id="server__config" class="hidden__item"> <!-- Server name and description -->
+							<h1 class="fs-4 text-center fw-bold mb-4 blue">Final Touches</h1>
+							<div class="mb-3">
+								<label class="mb-2 white-s" for="server_name">
+									Server Name
+								</label>
+								{{form.server_name(id="server_name", class="form-control")}}
+							</div>
+							<div class="mb-3">
+								<label class="mb-2 white-s" for="server_desc">
+									Server Description
+								</label>
+								{{form.server_description(id="server_desc", class="form-control",
+								style="height:150px")}}
+							</div>
+							<div class="d-flex justify-content-end align-items-center">
+								<button type="button" class="btn btn-secondary mx-1" id="server__back">
+									Back
+								</button>
+								{{form.submit(type="submit", class="btn btn-primary mx-1")}}
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
+</section>
+{% endblock %}

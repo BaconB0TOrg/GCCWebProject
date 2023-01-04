@@ -27,13 +27,70 @@
 }
 
 a.signout {
-    color:orangered;
+    color: orangered;
 }
 
-.btn-primary{
+.btn-primary {
     background-color: #88A47C !important;
 }
 
-.white-s{
+.white-s {
+    color: whitesmoke !important;
+}
+
+.select {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: space-around;
+    max-width: 600px;
+    gap: 10px;
+}
+
+.select__item {
+    padding: 8px;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 15px;
+    background: whitesmoke;
+    transition: background 0.1s;
+    color: #1C315E;
+}
+
+.select__item--selected {
+    background: #88A47C;
+    color: whitesmoke;
+}
+
+.visible__item {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 2s linear;
+}
+
+.hidden__item {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s 2s, opacity 2s linear, height 0 1s;
+    height: 0;
+}
+
+.hover__item {
+    cursor: pointer;
+    color: #88A47C;    
+}
+
+.hide{
+    max-height: 0;
+    transition: max-height 0.15s ease-out;
+    overflow: hidden;
+}
+
+.dropdown {
+    max-height: 700px;
+    transition: max-height 0.25s ease-in;
+}
+
+.link__server:hover {
     color: whitesmoke !important;
 }

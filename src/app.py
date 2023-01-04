@@ -8,7 +8,7 @@ from passlib.hash import sha256_crypt
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 dbpath = os.path.join(scriptdir, 'server_hosting.sqlite3')
 
-from forms import LoginForm, RegisterForm, ServerForm, ChangeEmailForm, ServerUpdateForm
+from forms import LoginForm, RegisterForm, ServerForm, ChangeEmailForm, ServerUpdateForm, CreateServerForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'somesecretkeythatislongenoughcool'
@@ -369,7 +369,7 @@ def post_update_server(server_id):
     flash_form_errors(form)
     return redirect(url_for('get_update_server'))
 
-@app.get('/servers/<int:server_id>/delete')
+@app.get('/servers/<int:server_id>/delete/')
 def delete_server(server_id):
   if not session.get('logged-in'):
     print(f'Anonymous user tried to delete server {server_id}')
@@ -404,6 +404,13 @@ def get_terminal(server_id):
     return redirect(url_for('welcome'))
   
   return render_template('terminal.html', docker_id=server.docker_id)
+
+@app.get('/server/create/')
+def get_server_create_tags():
+  form = CreateServerForm()
+  form.tags.choices = [(t.id, t.name) for t in Tag.query.all()]
+
+  return render_template('server_creation.html', form=form)
 
 @app.get('/mc_command/')
 def mc_command():
