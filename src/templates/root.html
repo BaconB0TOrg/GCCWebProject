@@ -27,7 +27,7 @@
         <a class='btn btn-secondary active' role="button" aria-pressed="true" href="/server/">Servers</a>
         <a class='btn btn-secondary active' role="button" aria-pressed="true" href="/server/create">Make a new Server</a>
         <a class='btn btn-secondary active' role="button" aria-pressed="true" href="/account/">My Account</a>
-        <a class='btn btn-danger active' role="button" aria-pressed="true" href="/log-out/">Log Out</a>
+        <a class='btn btn-danger active' role="button" aria-pressed="true" href="{{url_for('get_logout')}}">Log Out</a>
       {% else %}
         <a class='btn btn-secondary active' role="button" aria-pressed="true" href="/">Home</a>
         <a class='btn btn-secondary active' role="button" aria-pressed="true" href="/server/">Servers</a>

@@ -105,10 +105,10 @@ def post_login():
     flash_form_errors(form)
     return redirect(url_for('get_login'))
 
-@app.route('/log-out/')
-def get_log_out():
+@app.route('/logout/')
+def get_logout():
   if request.method != 'GET':
-    print(f"[WARN] User tried to {request.method} to {url_for('get_log_out')}. Only GET is allowed")
+    print(f"[WARN] User tried to {request.method} to {url_for('get_logout')}. Only GET is allowed")
     flash("You can't do that!")
     return redirect(url_for('welcome'))
   # if you're not logged in, wut
