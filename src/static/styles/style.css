@@ -91,6 +91,6 @@ a.signout {
     transition: max-height 0.25s ease-in;
 }
 
-#adv:hover {
+.link__server:hover {
     color: whitesmoke !important;
 }
