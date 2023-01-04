@@ -10,13 +10,28 @@
       "request": "launch",
       "module": "flask",
       "env": {
-        "FLASK_APP": "app.py",
-        "FLASK_DEBUG": "1"
+        "FLASK_APP": "src/app.py",
+        "FLASK_DEBUG": "0"
       },
       "args": [
         "run",
         "--no-debugger",
         "--no-reload"
+      ],
+      "jinja": true,
+      "justMyCode": true
+    },
+    {
+      "name": "Python: Flask Debugger",
+      "type": "python",
+      "request": "launch",
+      "module": "flask",
+      "env": {
+        "FLASK_APP": "src/app.py",
+        "FLASK_DEBUG": "1"
+      },
+      "args": [
+        "run",
       ],
       "jinja": true,
       "justMyCode": true
