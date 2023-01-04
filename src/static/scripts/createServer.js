@@ -91,11 +91,21 @@ window.addEventListener('DOMContentLoaded', (event) => {
     const tagButton = document.getElementById("tag__next");
     const optionsButton = document.getElementById("options__next");
 
+    // Back Buttons
+    const optionsBackButton = document.getElementById("options__back");
+    const serverBackButton = document.getElementById("server__back");
+
     // advanced options link
     const advLine = document.getElementById("adv")
 
+    // forward transitions
     trasition_event_fade(tagButton ,tagDiv, optionDiv); 
     trasition_event_fade(optionsButton, optionDiv, serverDiv);
     
+    // backward transitions 
+    trasition_event_fade(optionsBackButton, optionDiv, tagDiv);
+    trasition_event_fade(serverBackButton, serverDiv, optionDiv);
+
+    // advanced options dropdown
     trasition_event_dropdown(advLine, advOptions);
 });
