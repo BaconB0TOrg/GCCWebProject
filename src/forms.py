@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, EmailField, PasswordField, SubmitField, HiddenField, TextAreaField, SelectField, SelectMultipleField, IntegerField, BooleanField
+from wtforms import StringField, EmailField, PasswordField, SubmitField, HiddenField, TextAreaField, SelectField, SelectMultipleField, IntegerField, BooleanField, TextAreaField
 from wtforms.validators import InputRequired, EqualTo, Email, Length, Optional, NumberRange
 from wtforms.widgets import Select
 
@@ -138,4 +138,4 @@ class CreateServerForm(FlaskForm):
 
     # Final part of the form for naming the server and giving the server a description
     server_name = StringField("Server Name", validators=[InputRequired()])
-    server_description = StringField("Description", validators=[Optional()])
+    server_description = TextAreaField("Description", validators=[Optional()])
