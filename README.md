@@ -12,10 +12,9 @@ Clone repo
 
 #### Dependencies
 
-
-`pip install flask docker flask-sqlalchemy Flask-WTF email_validator passlib`<br>
-`pip install -e .`<br>
-`pip install -r requirements-dev.txt`<br>
+`python -m pip install flask docker flask-sqlalchemy Flask-WTF email_validator passlib`<br>
+`python -m pip install -e .`<br>
+`python -m pip install -r requirements-dev.txt`<br>
 
 ## Run this 
 
