@@ -218,18 +218,18 @@ def list_server():
   # servers = Server.query.filter_by(owner_id=user.id).all()
   return render_template('server_list.html', servers=servers, user_id=user_id)
 
-@app.get('/servers/create/')
+@app.get('/server/create/')
 def get_create_server():
   if not session.get('logged-in'):
     flash("You need to be logged in to see that page!")
     return redirect(url_for('get_login'))
-  form = ServerForm()
+  form = CreateServerForm()
   tags = Tag.query.all()
 
   form.tags.choices = [(t.id, t.name) for t in tags]
-  return render_template('new_server.html', form=form)
+  return render_template('server_creation.html', form=form)
 
-@app.post('/servers/create/')
+@app.post('/server/create/')
 def post_create_server():
   if not session.get('logged-in'):
     print(f'[INFO] Anonymous user tried to {request.method} {url_for("post_create_server")}')
@@ -237,7 +237,7 @@ def post_create_server():
     return redirect(url_for('get_login'))
 
   tags = Tag.query.all()
-  form = ServerForm()
+  form = CreateServerForm()
   form.tags.choices = [(t.id, t.name) for t in tags]
 
   if form.validate_on_submit():
@@ -251,7 +251,7 @@ def post_create_server():
     # this calc won't work if we delete servers who no longer have docker containers from the db.
     port = 25565+Server.query.count()*2
     # TODO: Pass properties here rather than force a separate call.
-    docker_id = mcdocker.make_server(name=form.name.data,port=port, max_players=str(form.maxPlayers.data), gamemode=str(form.gamemode.data.lower()))
+    docker_id = mcdocker.make_server(name=form.server_name.data,port=port, max_players=str(form.number_of_players.data), gamemode=str(form.gamemode.data.lower()))
     
     if not docker_id:
       print("[CRITICAL] Server could not be created!")
@@ -259,7 +259,7 @@ def post_create_server():
       return redirect(url_for('get_create_server'))
 
     tags = Tag.query.filter(Tag.id.in_(form.tags.data)).all()
-    server = Server(name=form.name.data, description=str(form.description.data), docker_id=str(docker_id), owner_id=user.id, max_players=int(form.maxPlayers.data), port=port, tags=tags)
+    server = Server(name=form.server_name.data, description=str(form.server_description.data), docker_id=str(docker_id), owner_id=user.id, max_players=int(form.number_of_players.data), port=port, tags=tags)
 
     db.session.add(server)
     db.session.commit()
@@ -404,13 +404,6 @@ def get_terminal(server_id):
     return redirect(url_for('welcome'))
   
   return render_template('terminal.html', docker_id=server.docker_id)
-
-@app.get('/server/create')
-def get_server_create_tags():
-  form = CreateServerForm()
-  form.tags.choices = [(t.id, t.name) for t in Tag.query.all()]
-
-  return render_template('server_creation.html', form=form)
 
 @app.get('/mc_command/')
 def mc_command():
