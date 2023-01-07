@@ -42,16 +42,16 @@
     {% endfor %}
 
   </div>
-  {# user exists and owns at least one server #}
-  {% if user != None and (user.servers|length != 0) %}
+  {# current_user exists and owns at least one server #}
+  {% if current_user != None and (current_user.servers|length != 0) %}
   <div class="col-sm-12 col-lg-4 col-xl-4">
     <h2>Your Servers</h2>
     <div id="users_servers">
-      {% for server in user.servers %}
+      {% for server in current_user.servers %}
       <input type="hidden" data-server-id="{{server.id}}" data-docker-id="{{server.docker_id}}" value=""/>
       {% endfor %}
     </div>
-    {% for server in user.servers %}
+    {% for server in current_user.servers %}
     <p>Server Info:
       <ul>
         <li id="{{server.id}}_status">Name: {{server.name}}</li>
