@@ -11,7 +11,6 @@ def is_safe_url(target):
         return False
     ref_url = urlparse(request.host_url)
     test_url = urlparse(urljoin(request.host_url, str(target)))
-    print(f'[DEBUG] is_safe_url test_url={test_url}')
     return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
 
 def get_redirect_target():
