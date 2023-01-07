@@ -1,5 +1,4 @@
 from flask import Flask, session
-from flask_testing import TestCase
 from app import db
 import models
 
