@@ -1,7 +1,8 @@
 import enum
 import os
 from passlib.hash import sha256_crypt
-import mc_lib.mcdocker as mcdocker 
+import mc_lib.mcdocker as mcdocker
+import flask_login
 
 from flask_sqlalchemy import SQLAlchemy
 
@@ -103,7 +104,7 @@ def setup_models(db: SQLAlchemy):
     def __str__(self):
       return f"SiteRole(name={self.name}, action={self.action}, resource={self.resource})"
 
-  class User(db.Model):
+  class User(db.Model, flask_login.UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     password = db.Column(db.Unicode, nullable=False)
@@ -112,6 +113,26 @@ def setup_models(db: SQLAlchemy):
     # TODO: Make site role mandatory
     site_role_id = db.Column(db.Integer, db.ForeignKey(SiteRole.id))
     servers = db.relationship('Server', secondary=UserServerRole, back_populates='users')
+    
+    def get_id(self):
+      return str(self.id)
+
+    @property
+    def is_authenticated(self):
+      return self.is_active
+
+    @property
+    def is_anonymous(self):
+      if id:
+        return True
+      else:
+        return False
+
+    @property
+    def is_active(self):
+      # TODO: implement email validation
+      return True
+      
     def __repr__(self):
       return str(self)
     def __str__(self):
