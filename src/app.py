@@ -107,8 +107,10 @@ def post_login():
     return redirect(url_for('get_login'))
 
 @app.route('/logout/')
-@login_required
 def get_logout():
+  if not current_user.is_authenticated:
+    flash("You can't do that.")
+    return redirect(url_for('welcome'))
   logout_user()
   flash("You've been logged out.")
   return redirect(url_for('welcome'))
