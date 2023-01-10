@@ -218,7 +218,7 @@ def list_server():
   # servers = Server.query.filter_by(owner_id=user.id).all()
   return render_template('server_list.html', servers=servers, user_id=user_id)
 
-@app.get('/server/create/')
+@app.get('/servers/create/')
 def get_create_server():
   if not session.get('logged-in'):
     flash("You need to be logged in to see that page!")
@@ -229,7 +229,7 @@ def get_create_server():
   form.tags.choices = [(t.id, t.name) for t in tags]
   return render_template('server_creation.html', form=form)
 
-@app.post('/server/create/')
+@app.post('/servers/create/')
 def post_create_server():
   if not session.get('logged-in'):
     print(f'[INFO] Anonymous user tried to {request.method} {url_for("post_create_server")}')
