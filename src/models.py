@@ -137,7 +137,7 @@ class TableModels:
 
     addServers = [
       Server(name="FirstServer", port=25565,owner_id=users[0].id,docker_id=docker_ids[0], description="The First server of the Minecraft Server Hosting Service, <cool and memorable name here>!",  max_players=20, tags=[tags[0], tags[1]]),
-      Server(name="SecondServer",port=25567,owner_id=users[0].id, docker_id=docker_ids[1], description="The Second server of the Minecraft Server Hosting Service, <cool and memorable name here>!",max_players=10, tags=[tags[2]]),
+      # Server(name="SecondServer",port=25567,owner_id=users[0].id, docker_id=docker_ids[1], description="The Second server of the Minecraft Server Hosting Service, <cool and memorable name here>!",max_players=10, tags=[tags[2]]),
       # Server(name="ThirdServer", port=25569,owner_id=users[1].id,docker_id=docker_ids[2], description="The Third server of the Minecraft Server Hosting Service, <cool and memorable name here>!",  max_players=20, tags=[tags[0]])
       # Server(name="FourthServer",owner_id=users[2].id, docker_id=docker_ids[3], description="The Fourth server of the Minecraft Server Hosting Service, <cool and memorable name here>!",max_players=20, tags=[tags[0], tags[1], tags[2], tags[3]]),
       # Server(name="FifthServer", owner_id=users[3].id,docker_id=docker_ids[4], description="The Fifth server of the Minecraft Server Hosting Service, <cool and memorable name here>!",  max_players=50, tags=[tags[5], tags[4]]),
@@ -164,7 +164,7 @@ class TableModels:
 
     if server:
       name='testName'
-      container_id = mcdocker.make_server(name=name,port=25565, max_players=20)
+      container_id = mcdocker.make_server(name=name,port=25565, max_players=20, testing=True)
 
       server = Server(name=name, port=25565, owner_id=user.id, docker_id=container_id, description="Test description",  max_players=20, tags=[tags[0], tags[1]])
       self.db.session.add(server)
