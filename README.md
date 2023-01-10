@@ -16,6 +16,10 @@ Clone repo
 `python -m pip install -e .`<br>
 `python -m pip install -r requirements-dev.txt`<br>
 
+##### For Testing, Also install
+
+`python -m pip install pytest-cov`
+
 ## Run this 
 
 Start the server using `python -m flask --app "app.py" run` and visit localhost:5000 to see it.
