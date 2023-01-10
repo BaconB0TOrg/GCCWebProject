@@ -1,7 +1,6 @@
 import pytest
 from app import app as main_app, db, tableModels as tm
 from flask_login import FlaskLoginClient
-from mc_lib.mcdocker import remove_docker, make_server
 import mc_lib.mcdocker as mcdocker
 
 @pytest.fixture()
@@ -27,7 +26,7 @@ def db_obj():
 def tableModelsSeededServers(app, docker_name):
     with app.app_context():
         tm.reset()
-        remove_docker(docker_name)
+        mcdocker.remove_docker(docker_name)
         tm.seed_tests(server=True)
         
     yield tm
@@ -35,7 +34,7 @@ def tableModelsSeededServers(app, docker_name):
     # clean up / reset resources here
     with app.app_context():
         tm.reset()
-        remove_docker(docker_name)
+        mcdocker.remove_docker(docker_name)
 
 @pytest.fixture()
 def tableModelsSeeded(app):
@@ -91,18 +90,18 @@ def docker_name():
 
 @pytest.fixture()
 def cleanup_mc_server(app, db_obj, tableModels, docker_name):
-    yield
+    yield 
 
     with app.app_context():
         server = tableModels.tables.Server.query.get(1)
         db_obj.session.delete(server)
         db_obj.session.commit()
-
-    remove_docker(docker_name)
+    
+    mcdocker.remove_docker(docker_name)
 
 @pytest.fixture()
 def create_mc_server(app, db_obj, tableModelsSeeded, docker_name):
-    container_id = make_server(name=docker_name)
+    container_id = mcdocker.make_server(name=docker_name, testing=True)
     with app.app_context():
         user = tableModelsSeeded.tables.User.query.get(1)
         server = tableModelsSeeded.tables.Server(name=docker_name, owner_id=user.id, port=25565, max_players=20, docker_id=container_id)
