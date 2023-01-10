@@ -94,8 +94,9 @@ def cleanup_mc_server(app, db_obj, tableModels, docker_name):
 
     with app.app_context():
         server = tableModels.tables.Server.query.get(1)
-        db_obj.session.delete(server)
-        db_obj.session.commit()
+        if server:
+            db_obj.session.delete(server)
+            db_obj.session.commit()
     
     mcdocker.remove_docker(docker_name)
 

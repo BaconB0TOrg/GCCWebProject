@@ -61,7 +61,7 @@ def test_get_create_server_anon(client):
 def test_get_create_server_auth(client_with_user):
     with client_with_user as client:
         response = client.get('/servers/create/')
-        assert b'To select multiple tags, hold ctrl and click to select or deselect the tags you want.' \
+        assert b'Create a new Server' \
             in response.data, 'Authenticated users can access the create server form.'
         # TODO: Maybe test that all the tags are present?
 
@@ -191,11 +191,12 @@ def test_post_register_fail_form(client):
 def test_post_create_server_anon(app, tableModels, client, docker_name):
     with client:
         response = client.post('/servers/create/', follow_redirects=True, data=dict(
-            name=docker_name,
-            description="Test Server Description",
+            server_name=docker_name,
+            server_description="Test Server Description",
             tags=[],
-            maxPlayers=20,
-            gamemode='survival'
+            number_of_players=20,
+            gamemode='survival',
+            difficulty='peaceful'
         ))
         with app.app_context():
             servers = tableModels.tables.Server.query.all()
@@ -205,32 +206,33 @@ def test_post_create_server_anon(app, tableModels, client, docker_name):
 def test_post_create_server_auth_succeed(app, tableModels, client_with_user, cleanup_mc_server, docker_name):
     with client_with_user as client:
         response = client.post('/servers/create/', follow_redirects=True, data=dict(
-            name=docker_name,
-            description="Test Server Description",
+            server_name=docker_name,
+            server_description="Test Server Description",
             tags=[],
-            maxPlayers=20,
-            gamemode='survival'
+            number_of_players=20,
+            gamemode='survival',
+            difficulty='peaceful'
         ))
+        assert len(response.history) == 1,          "Redirects once."
+        assert response.request.path == '/servers/', "Redirected to page listing all servers."
         with app.app_context():
             servers = tableModels.tables.Server.query.all()
             assert len(servers) == 1,               "Server object is created and saved."
-        assert len(response.history) == 1,          "Redirects once."
-        assert response.request.path == '/servers/', "Redirected to page listing all servers."
         assert b'All Servers' in response.data
 
 def test_post_create_server_auth_fail(client_with_user):
     with client_with_user as client:
         response = client.post('/servers/create/', follow_redirects=True, data=dict(
-            name="",
-            description="Test Server Description",
+            server_name='',
+            server_description="Test Server Description",
             tags=[],
-            maxPlayers=20,
-            gamemode='survival'
-        )
-        )
+            number_of_players=20,
+            gamemode='survival',
+            difficulty='peaceful'
+        ))
         assert len(response.history) == 1
         assert response.request.path == '/servers/create/'
-        assert b'To select multiple tags, hold ctrl and click to select or deselect the tags you want.' in response.data
+        assert b'Create a new Server' in response.data
 
 def test_post_update_server_anon(client, tableModelsSeededServers):
     with client:

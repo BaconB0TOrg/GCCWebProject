@@ -201,7 +201,7 @@ def list_server():
 @app.get('/servers/create/')
 @login_required
 def get_create_server():
-  form = ServerForm()
+  form = CreateServerForm()
   tags = Tag.query.all()
 
   form.tags.choices = [(t.id, t.name) for t in tags]
