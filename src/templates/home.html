@@ -61,7 +61,7 @@
     Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde voluptatibus vitae pariatur ex blanditiis? Qui dolore voluptatibus sunt facere animi, facilis possimus, atque maiores earum in ullam vel debitis a!
   </p>
   <p class="text-center">
-    {% if session['logged-in'] %}
+    {% if current_user.is_authenticated %}
     <a class='btn btn-lg active green' role="button" aria-pressed="true" href="/servers/create/">Create a Server</a>
     {% else %}
     <a class='btn btn-lg active green' role="button" aria-pressed="true" href="/register/">Get Started</a>
