@@ -241,7 +241,7 @@ def start_docker(container_id=None):
 
 def remove_docker(container_id=None):
     """
-    Function to delete a docker, used if the user decides to delete a button
+    Function to delete a docker container, used if the user decides to delete a server
     
     Keyword arguments:
     container_id : String, optional
