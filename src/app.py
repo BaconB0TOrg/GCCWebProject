@@ -45,16 +45,16 @@ def safe_redirect(form, next, path):
 #    Route Handlers     #
 #########################
 
-# @app.route('/site-map/')
-# def site_map():
-#   links = []
-#   for rule in app.url_map.iter_rules():
-#     if 'GET' in rule.methods:
-#       rule = escape(rule.rule)
-#       links.append(f'<a href={rule}>{rule}</a>')
-#   # links is now a list of url's with their parameters
-#   linksString = '<br>'.join(links)
-#   return linksString
+@app.route('/site-map/')
+def site_map():
+  links = []
+  for rule in app.url_map.iter_rules():
+    if 'GET' in rule.methods:
+      rule = escape(rule.rule)
+      links.append(f'<a href={rule}>{rule}</a>')
+  # links is now a list of url's with their parameters
+  linksString = '<br>'.join(links)
+  return linksString
 
 @app.get('/')
 def redirect_to_welcome():
@@ -192,13 +192,13 @@ def post_register():
     flash_form_errors(form)
     return redirect(url_for('get_register'))
 
-@app.get('/server/')
+@app.get('/servers/')
 def list_server():
   # TODO: Paginate servers index
   servers = Server.query.all()
   return render_template('server_list.html', servers=servers)
 
-@app.get('/server/create/')
+@app.get('/servers/create/')
 @login_required
 def get_create_server():
   form = ServerForm()
@@ -207,7 +207,7 @@ def get_create_server():
   form.tags.choices = [(t.id, t.name) for t in tags]
   return render_template('new_server.html', form=form)
 
-@app.post('/server/create/')
+@app.post('/servers/create/')
 @login_required
 def post_create_server():
   tags = Tag.query.all()
@@ -246,7 +246,7 @@ def post_create_server():
     flash_form_errors(form)
     return redirect(url_for('get_create_server'))
 
-@app.get('/server/<int:server_id>/')
+@app.get('/servers/<int:server_id>/')
 def show_server(server_id):
   server = Server.query.get(server_id)
   if not server:
@@ -262,7 +262,7 @@ def show_server(server_id):
 
   return render_template('server.html', server=server)
 
-@app.get('/server/<int:server_id>/update/')
+@app.get('/servers/<int:server_id>/update/')
 @login_required
 def get_update_server(server_id):
   server = Server.query.get(server_id)
@@ -286,7 +286,7 @@ def get_update_server(server_id):
   form.tags.choices = [(t.id, t.name) for t in tags]
   return render_template('update_server.html', form=form)
 
-@app.post('/server/<int:server_id>/update/')
+@app.post('/servers/<int:server_id>/update/')
 @login_required
 def post_update_server(server_id):
   form = ServerUpdateForm()
@@ -325,7 +325,7 @@ def post_update_server(server_id):
     flash_form_errors(form)
     return redirect(url_for('get_update_server', server_id=server_id))
 
-@app.get('/server/<int:server_id>/delete/')
+@app.get('/servers/<int:server_id>/delete/')
 @login_required
 def delete_server(server_id):
   server = Server.query.get(server_id)
@@ -342,7 +342,7 @@ def delete_server(server_id):
     flash("You don't have permission to do that!")
     return redirect(url_for('list_server'))
 
-@app.get('/server/<int:server_id>/terminal/')
+@app.get('/servers/<int:server_id>/terminal/')
 @login_required
 def get_terminal(server_id):
   if server_id == None:
@@ -361,6 +361,13 @@ def get_terminal(server_id):
     return redirect(url_for('welcome'))
 
   return render_template('terminal.html', docker_id=server.docker_id)
+
+@app.get('/server/create/')
+def get_server_create_tags():
+  form = CreateServerForm()
+  form.tags.choices = [(t.id, t.name) for t in Tag.query.all()]
+
+  return render_template('server_creation.html', form=form)
 
 @app.get('/mc_command/')
 @login_required

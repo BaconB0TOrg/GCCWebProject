@@ -1,8 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, EmailField, PasswordField, SubmitField, HiddenField, TextAreaField, SelectField, SelectMultipleField, IntegerField
+from wtforms import StringField, EmailField, PasswordField, SubmitField, HiddenField, TextAreaField, SelectField, SelectMultipleField, IntegerField, BooleanField, TextAreaField
 from wtforms.validators import InputRequired, EqualTo, Email, Length, Optional, NumberRange
 from flask import request, url_for, redirect
 from urllib.parse import urlparse, urljoin
+from wtforms.widgets import Select
 
 
 # from https://web.archive.org/web/20120501162055/http://flask.pocoo.org/snippets/63/
@@ -155,3 +156,22 @@ class ServerUpdateForm(FlaskForm):
 class ChangeEmailForm(FlaskForm):
     email = EmailField("New Email", validators=[InputRequired(), Email()])
     submit = SubmitField("Change email")
+
+class CreateServerForm(FlaskForm):
+    # Selecting tags
+    tags = SelectMultipleField("Tags", validators=[Optional()], coerce=int)
+    submit = SubmitField("Create")
+
+    # Selecting Server Options TODO: Find out what is going to go in advanced options
+    number_of_players = IntegerField("Max Players", validators=[InputRequired(), NumberRange(2, 100)])
+    gamemode = SelectField("Gamemode", choices=[('survival', 'Survival'), ('creative', 'Creative')], validators=[InputRequired()])
+    difficulty = SelectField("Difficulty", choices=[('peaceful', 'Peaceful'), ('easy', 'Easy'), ('normal', 'Normal'), ('hard', 'Hard')])
+    pvp = BooleanField("Player vs. Player", validators=[Optional()])
+    '''Advanced options'''
+    hardcore = BooleanField("Hardcore", validators=[Optional()])
+    spawn_npcs = BooleanField("Spawn NPCs", validators=[Optional()])
+    generate_structures = BooleanField("Generate Structures", validators=[Optional()])
+
+    # Final part of the form for naming the server and giving the server a description
+    server_name = StringField("Server Name", validators=[InputRequired()])
+    server_description = TextAreaField("Description", validators=[Optional()])

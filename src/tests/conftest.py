@@ -2,6 +2,7 @@ import pytest
 from app import app as main_app, db, tableModels as tm
 from flask_login import FlaskLoginClient
 from mc_lib.mcdocker import remove_docker, make_server
+import mc_lib.mcdocker as mcdocker
 
 @pytest.fixture()
 def app():
@@ -80,7 +81,6 @@ def client_with_user_server(app, tableModelsSeededServers):
 
     yield app.test_client(user=user)
 
-
 @pytest.fixture()
 def runner(app):
     yield app.test_cli_runner()
@@ -111,3 +111,15 @@ def create_mc_server(app, db_obj, tableModelsSeeded, docker_name):
         server = tableModelsSeeded.tables.Server.query.get(1)
 
     yield server
+
+@pytest.fixture(scope="session")
+def setup_docker(request):
+    print("Setting Docker Env")
+    server = mcdocker.make_server(threaded=False) # Force a linear run through
+    def teardown():
+        print("Teardown Docker Env")
+        mcdocker.remove_docker(container_id=server) == False # True meaning it return successfully
+    request.addfinalizer(teardown)
+    return {
+        "server_name": server,
+    } 
