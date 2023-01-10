@@ -369,7 +369,7 @@ def post_update_server(server_id):
     flash_form_errors(form)
     return redirect(url_for('get_update_server'))
 
-@app.get('/servers/<int:server_id>/delete')
+@app.get('/servers/<int:server_id>/delete/')
 def delete_server(server_id):
   if not session.get('logged-in'):
     print(f'Anonymous user tried to delete server {server_id}')
