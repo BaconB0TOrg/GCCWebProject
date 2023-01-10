@@ -34,7 +34,7 @@ def test_get_register(client):
 
 def test_list_server_anon(client):
     with client:
-        response = client.get('/server/')
+        response = client.get('/servers/')
         assert b'All Servers' in response.data
         # TODO: Maybe test that the correct number of servers are shown?
     response = client.get('/register/')
@@ -42,18 +42,18 @@ def test_list_server_anon(client):
 
 def test_list_server_auth(client_with_user):
     with client_with_user as client:
-        response = client.get('/server/')
+        response = client.get('/servers/')
         assert b'All Servers' in response.data
         # TODO: Maybe test that the correct number of servers are shown?
 
 def test_get_create_server_anon(client):
     with client:
-        response = client.get('/server/create/', follow_redirects=True)
+        response = client.get('/servers/create/', follow_redirects=True)
         assert response.request.path == '/login/', 'Anonymous users are redirected to login'
 
 def test_get_create_server_auth(client_with_user):
     with client_with_user as client:
-        response = client.get('/server/create/')
+        response = client.get('/servers/create/')
         assert b'To select multiple tags, hold ctrl and click to select or deselect the tags you want.' \
             in response.data, 'Authenticated users can access the create server form.'
         # TODO: Maybe test that all the tags are present?
@@ -62,25 +62,25 @@ def test_show_server_anon(app, client, tableModelsSeededServers):
     with client:
         with app.app_context():
             server = tableModelsSeededServers.tables.Server.query.get(1)
-        response = client.get(f'/server/{server.id}/')
+        response = client.get(f'/servers/{server.id}/')
         assert b'testName' in response.data, "Show the right server's information."
 
 def test_show_server_auth(app, client_with_user_servers, tableModels):
     with app.app_context():
         server = tableModels.tables.Server.query.get(1)
     with client_with_user_servers as client:
-        response = client.get(f'/server/{server.id}/')
+        response = client.get(f'/servers/{server.id}/')
         assert b'testName' in response.data, "Show the right server's information."
 
 def test_get_update_server_anon(client, tableModelsSeededServers):
     with client:
-        response = client.get('/server/1/update/', follow_redirects=True)
+        response = client.get('/servers/1/update/', follow_redirects=True)
         assert b'Log in' in response.data,          "The login page is shown"
         assert response.request.path == '/login/',   "Anonymous users are redirected to login."
 
 def test_get_update_server_auth_owner(client_with_user_servers):
     with client_with_user_servers as client:
-        response = client.get('/server/1/update/')
+        response = client.get('/servers/1/update/')
         assert b'Update Server' in response.data, "Shows the update page for the server"
 
 def test_get_update_server_auth_bad_user(app, db_obj, tableModelsSeededServers):
@@ -90,24 +90,24 @@ def test_get_update_server_auth_bad_user(app, db_obj, tableModelsSeededServers):
         db_obj.session.add(user)
         db_obj.session.commit()
         with app.test_client(user=user) as client:
-            response = client.get('/server/1/update/', follow_redirects=True)
+            response = client.get('/servers/1/update/', follow_redirects=True)
             assert len(response.history) == 1,          "Redirects once."
-            assert response.request.path == '/server/', "Only owners of the server can view the update server form."
+            assert response.request.path == '/servers/', "Only owners of the server can view the update server form."
 
 def test_get_update_server_auth_bad_server(client_with_user_servers):
     with client_with_user_servers as client:
-        response = client.get('/server/2/update/', follow_redirects=True)
+        response = client.get('/servers/2/update/', follow_redirects=True)
         assert len(response.history) == 1,          "Redirects once."
-        assert response.request.path == '/server/', "Redirects to list servers page"
+        assert response.request.path == '/servers/', "Redirects to list servers page"
 
 def test_delete_server(app, create_mc_server, tableModels):
     server = create_mc_server
     with app.app_context():
         user = tableModels.tables.User.query.get(1)
         with app.test_client(user=user) as client:
-            response = client.get('/server/1/delete/', follow_redirects=True)
+            response = client.get('/servers/1/delete/', follow_redirects=True)
             assert len(response.history) == 1,              "Redirects once."
-            assert response.request.path == '/server/',     "Redirects to the list servers page."
+            assert response.request.path == '/servers/',     "Redirects to the list servers page."
             assert remove_docker(server.docker_id) == False,"Docker container is deleted."
             no_server = tableModels.tables.Server.query.get(1)
             assert no_server == None,                       "Server is deleted from db."
@@ -184,7 +184,7 @@ def test_post_register_fail_form(client):
 
 def test_post_create_server_anon(app, tableModels, client, docker_name):
     with client:
-        response = client.post('/server/create/', follow_redirects=True, data=dict(
+        response = client.post('/servers/create/', follow_redirects=True, data=dict(
             name=docker_name,
             description="Test Server Description",
             tags=[],
@@ -198,7 +198,7 @@ def test_post_create_server_anon(app, tableModels, client, docker_name):
         
 def test_post_create_server_auth_succeed(app, tableModels, client_with_user, cleanup_mc_server, docker_name):
     with client_with_user as client:
-        response = client.post('/server/create/', follow_redirects=True, data=dict(
+        response = client.post('/servers/create/', follow_redirects=True, data=dict(
             name=docker_name,
             description="Test Server Description",
             tags=[],
@@ -209,12 +209,12 @@ def test_post_create_server_auth_succeed(app, tableModels, client_with_user, cle
             servers = tableModels.tables.Server.query.all()
             assert len(servers) == 1,               "Server object is created and saved."
         assert len(response.history) == 1,          "Redirects once."
-        assert response.request.path == '/server/', "Redirected to page listing all servers."
+        assert response.request.path == '/servers/', "Redirected to page listing all servers."
         assert b'All Servers' in response.data
 
 def test_post_create_server_auth_fail(client_with_user):
     with client_with_user as client:
-        response = client.post('/server/create/', follow_redirects=True, data=dict(
+        response = client.post('/servers/create/', follow_redirects=True, data=dict(
             name="",
             description="Test Server Description",
             tags=[],
@@ -223,12 +223,12 @@ def test_post_create_server_auth_fail(client_with_user):
         )
         )
         assert len(response.history) == 1
-        assert response.request.path == '/server/create/'
+        assert response.request.path == '/servers/create/'
         assert b'To select multiple tags, hold ctrl and click to select or deselect the tags you want.' in response.data
 
 def test_post_update_server_anon(client, tableModelsSeededServers):
     with client:
-        response = client.post('/server/1/update/', follow_redirects=True, data=dict(
+        response = client.post('/servers/1/update/', follow_redirects=True, data=dict(
             name="NewName",
             description="New Description",
             tags=[4, 5],
@@ -239,14 +239,14 @@ def test_post_update_server_anon(client, tableModelsSeededServers):
 
 def test_post_update_server_auth_owner(app, client_with_user_servers, tableModels):
     with client_with_user_servers as client:
-        response = client.post('/server/1/update/', follow_redirects=True, data=dict(
+        response = client.post('/servers/1/update/', follow_redirects=True, data=dict(
             name="NewName",
             description="New Description",
             tags=[4, 5],
             id=1
         ))
         assert len(response.history) == 1,              "Redirects once."
-        assert response.request.path == '/server/1/',   "Redirects to the correct path"
+        assert response.request.path == '/servers/1/',   "Redirects to the correct path"
         assert b'NewName' in response.data,             "The correct server's page is shown."
 
 def test_post_update_server_auth_bad_user(app, db_obj, tableModelsSeededServers):
@@ -256,14 +256,14 @@ def test_post_update_server_auth_bad_user(app, db_obj, tableModelsSeededServers)
         db_obj.session.add(user)
         db_obj.session.commit()
         with app.test_client(user=user) as client:
-            response = client.post('/server/1/update/', follow_redirects=True, data=dict(
+            response = client.post('/servers/1/update/', follow_redirects=True, data=dict(
                 name="NewName",
                 description="New Description",
                 tags=[4, 5],
                 id=1
             ))
             assert len(response.history) == 1,                  "Redirects once."
-            assert response.request.path == '/server/create/',   "Redirects to the create server page."
+            assert response.request.path == '/servers/create/',   "Redirects to the create server page."
             Server = tableModelsSeededServers.tables.Server
             server = Server.query.get(1)
             assert server.name == 'testName',                   "Server's information is not changed."
