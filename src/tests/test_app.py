@@ -1,5 +1,12 @@
+import pytest
 from flask_login import current_user, login_user
+import mc_lib.mcdocker as mcdocker
 from mc_lib.mcdocker import remove_docker
+
+# TODO: Test these routes:
+# - change_email
+# - get_terminal
+# - mc_command
 
 ############# GET ROUTES #############
 
@@ -112,7 +119,6 @@ def test_delete_server(app, create_mc_server, tableModels):
             no_server = tableModels.tables.Server.query.get(1)
             assert no_server == None,                       "Server is deleted from db."
 
-
 ############# POST ROUTES #############
 
 
@@ -195,7 +201,7 @@ def test_post_create_server_anon(app, tableModels, client, docker_name):
             servers = tableModels.tables.Server.query.all()
             assert len(servers) == 0
         assert response.request.path == '/login/', 'Anonymous users are redirected to login'
-        
+
 def test_post_create_server_auth_succeed(app, tableModels, client_with_user, cleanup_mc_server, docker_name):
     with client_with_user as client:
         response = client.post('/servers/create/', follow_redirects=True, data=dict(
@@ -235,7 +241,7 @@ def test_post_update_server_anon(client, tableModelsSeededServers):
             id=1
         ))
         assert len(response.history) == 1,          "Redirects Twice: to "
-        assert response.request.path == '/login/', "Redirects anonymous users to login page."
+        assert response.request.path == '/login/',  "Redirects anonymous users to login page."
 
 def test_post_update_server_auth_owner(app, client_with_user_servers, tableModels):
     with client_with_user_servers as client:
