@@ -1,10 +1,10 @@
 from forms import LoginForm, RegisterForm, ServerForm, ChangeEmailForm, ServerUpdateForm, is_safe_url
 import mc_lib.mcdocker as mcdocker
 import os
-import models
+from models import TableModels
 from flask import Flask, escape, abort, request, render_template, url_for, redirect, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, login_user, login_required, logout_user, FlaskLoginClient, current_user
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from passlib.hash import sha256_crypt
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
@@ -14,9 +14,9 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'somesecretkeythatislongenoughcool'
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{dbpath}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.test_client_class = FlaskLoginClient
 
 db = SQLAlchemy(app)
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "get_login"
@@ -32,6 +32,14 @@ def flash_form_errors(form):
 @login_manager.user_loader
 def load_user(user_id):
   return User.query.get(user_id)
+
+def safe_redirect(form, next, path):
+  if not is_safe_url(next):
+    if next != None:
+      print(f'[INFO] Blocked redirect to foreign url: {next} on {path}. Redirecting to welcome page.')
+    return form.redirect('welcome')
+
+  return form.redirect(next)
 
 #########################
 #    Route Handlers     #
@@ -67,13 +75,16 @@ def get_login():
 @app.post('/login/')
 def post_login():
   # Don't allow logged in users to nav here
+  form = LoginForm()
+
   if current_user.is_authenticated:
     print(
         f'[INFO] User {current_user.id} tried to login while already logged in!')
-    flash('You are not allowed to do that!')
-    return redirect(url_for('welcome'))
+    flash('You must logout before you can login as someone else!')
+    
+    next = request.args.get('next')
 
-  form = LoginForm()
+    return safe_redirect(form, next, '/login/')
   if form.validate_on_submit():
     # get user if exists and go from there
     username = form.username.data
@@ -96,11 +107,7 @@ def post_login():
 
     next = request.args.get('next')
 
-    if not is_safe_url(next):
-      print(f'[INFO] Blocked redirect to foreign url: {next} on login. Redirecting to welcome page.')
-      return form.redirect('welcome')
-
-    return form.redirect(next)
+    return safe_redirect(form, next, '/login/')
   else:
     print('[INFO] Failed to login user: Invalid form.')
     flash_form_errors(form)
@@ -151,43 +158,39 @@ def get_register():
 
 @app.post('/register/')
 def post_register():
-    form = RegisterForm()
-    if form.validate_on_submit():
-        email = form.email.data
-        uname = form.username.data
-        checkUsers = User.query.filter_by(email=email).all()
-        if len(checkUsers) > 0:
-          # email already exists.
-          flash('That email is already in use!')
-          return redirect(url_for('get_register'))
+  form = RegisterForm()
+  if form.validate_on_submit():
+    email = form.email.data
+    uname = form.username.data
+    checkUsers = User.query.filter_by(email=email).all()
+    if len(checkUsers) > 0:
+      # email already exists.
+      flash('That email is already in use!')
+      return redirect(url_for('get_register'))
 
-        checkUsers = User.query.filter_by(username=uname).all()
-        if len(checkUsers) > 0:
-          # username already exists.
-          flash('That username is taken!')
-          return redirect(url_for('get_register'))
-        # encrypt password.
-        pw = sha256_crypt.encrypt(str(form.password.data))
-        user = User(password=pw, email=email, username=uname)
+    checkUsers = User.query.filter_by(username=uname).all()
+    if len(checkUsers) > 0:
+      # username already exists.
+      flash('That username is taken!')
+      return redirect(url_for('get_register'))
 
-        db.session.add(user)
-        db.session.commit()
+    pw = sha256_crypt.hash(str(form.password.data))
+    user = User(password=pw, email=email, username=uname)
 
-        user = User.query.filter_by(email=email).first()
-        login_user(user)
+    db.session.add(user)
+    db.session.commit()
 
-        flash(f'Welcome {uname}!')
-        next = request.args.get('next')
+    user = User.query.filter_by(email=email).first()
+    login_user(user)
 
-        if not is_safe_url(next):
-          print(f'[INFO] Blocked redirect to foreign url: {next} on register. Redirecting to welcome page.')
-          return form.redirect('welcome')
+    flash(f'Welcome {uname}!')
+    next = request.args.get('next')
 
-        return form.redirect(next)
-    else:
-        # flash error messages for all validation problems
-        flash_form_errors(form)
-        return redirect(url_for('get_register'))
+    return safe_redirect(form, next, '/register/')
+  else:
+    # flash error messages for all validation problems
+    flash_form_errors(form)
+    return redirect(url_for('get_register'))
 
 @app.get('/server/')
 def list_server():
@@ -298,14 +301,14 @@ def post_update_server(server_id):
     servers = Server.query.filter_by(owner_id=current_user.id).all()
     if not servers or len(servers) == 0:
       print(f"[WARN] Failed to update server: User {current_user.id} doesn't own any servers!")
-      flash("You have to own the server in order to update it!")
+      flash("You don't have permission to do that.")
       return redirect(url_for('get_create_server'))
 
     server_as_list = list(filter(lambda s: s.id == form_server_id, servers))
     if not server_as_list or len(server_as_list) == 0:
       print(
           f'[WARN] Failed to update server: User {current_user.id} does not own Server {server_id}!')
-      flash("You have to own the server in order to update it!")
+      flash("You don't have permission to do that.")
       return redirect(url_for('get_create_server'))
 
     server = server_as_list[0]
@@ -320,12 +323,13 @@ def post_update_server(server_id):
     return redirect(url_for('show_server', server_id=server_id))
   else:
     flash_form_errors(form)
-    return redirect(url_for('get_update_server'))
+    return redirect(url_for('get_update_server', server_id=server_id))
 
-@app.get('/server/<int:server_id>/delete')
+@app.get('/server/<int:server_id>/delete/')
 @login_required
 def delete_server(server_id):
   server = Server.query.get(server_id)
+  # TODO: Don't assume the server exists
   if current_user.id == server.owner_id:
     mcdocker.remove_docker(container_id=server.docker_id)
     db.session.delete(server)
@@ -368,8 +372,12 @@ def mc_command():
   response = jsonify(message=rcon_response)
   return response
 
+
 with app.app_context():
-  User, Server, Tag, SiteRole, ServerTag, ServerRolePermission, UserServerRole, ServerEvent = models.setup_models(
-      db)
-  models.init(db, seed=False, tables=(User, Server, Tag, SiteRole,
-              ServerTag, ServerRolePermission, UserServerRole, ServerEvent))
+  # These are accessible because this block runs in the global namespace (the namespace of the
+  # app.py module). Thus, these are defined 'global' to this module.
+  # This is an indented block of code, but it is not a function nor class definition, so
+  # it runs global to the module! I get it! (See the documentation (https://docs.python.org/3/tutorial/classes.html#scopes-and-namespaces-example)
+  # for more info)
+  tableModels = TableModels(db)
+  UserServerRole, ServerEvent, Tag, ServerTag, ServerRolePermission, Server, SiteRole, User = tableModels.tables
