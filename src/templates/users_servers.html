@@ -4,9 +4,94 @@
 <meta name="author" content="Collin Campbell">
 {% endblock %}
 {% block head %}
-  <script src=""></script>
+<script src=""></script>
 {% endblock %}
 
 {% block content %}
-<p>Testing</p>
+<section class="h-100">
+    <div class="container h-100">
+        <div class="row justify-content-sm-center h-100">
+            <div class="text-center my-5">
+                <img src="https://via.placeholder.com/125x50" alt="logo" width="100">
+            </div>
+
+            <div class="p-3">
+                <div class="d-flex flex-row justify-content-start">
+                    <h3>Your Servers</h3>
+                    <a class="ms-auto" href="{{url_for('get_create_server')}}">
+                        <button type="button" class="btn btn-primary" id="new__server">
+                            Create Server
+                        </button>
+                    </a>
+                </div>
+                <hr />
+                <div class="card shadow-lg blue w-95">
+                    <div class="card-body">
+                        <div class="container-fluid">
+                            <div class="row g-0 justify-content-center">
+                                <div class="col-2 text-center">
+                                    <p>Server Name</p>
+                                </div>
+                                <div class="col-2 text-center">
+                                    <p>Status</p>
+                                </div>
+                                <div class="col-1 text-center">
+                                    <p>Plan</p>
+                                </div>
+                                <div class="col-2 text-center">
+                                    <p>IP Address</p>
+                                </div>
+                                <div class="col-2 text-center">
+                                    <p>Players</p>
+                                </div>
+                                <div class="col-1 text-center">
+                            
+                                </div>
+                            </div>
+
+                            {% for i in servers %}
+                                <div class="row g-0 justify-content-center">
+                                    <div class="col-2 text-center">
+                                        <p>{{i.name}}</p>
+                                    </div>
+                                    <div class="col-2 text-center">
+                                        <p>Online</p>
+                                    </div>
+                                    <div class="col-1 text-center">
+                                        <p>2 GB</p>
+                                    </div>
+                                    <div class="col-2 text-center">
+                                        <p>127.0.0.1:25565</p>
+                                    </div>
+                                    <div class="col-2 text-center">
+                                        <p>0/50</p>
+                                    </div>
+                                    <div class="col-1 text-center">
+                                        <a class="hover__item link__server">edit</a>
+                                        <a class="hover__item link__server">delete</a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-3">
+                <h3>Followed Servers</h3>
+                <hr />
+                <div class="card shadow-lg blue w-95">
+                    <div class="card-body">
+                        <div class="d-flex flex-row justify-content-start">
+                            <p class="m-auto">Server Name</p>
+                            <p class="m-auto">Status</p>
+                            <p class="m-auto">IP address</p>
+                            <p class="m-auto">Players</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}
