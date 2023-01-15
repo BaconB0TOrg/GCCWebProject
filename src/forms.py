@@ -15,7 +15,8 @@ class RegisterForm(FlaskForm):
     password = PasswordField("Password", validators=[InputRequired(), Length(min=8, message="Password must be at least 8 characters long.")])
     confirm_password = PasswordField("Confirm Password", validators=[InputRequired(), EqualTo('password', message="Passwords Do Not Match.")])
     submit = SubmitField("Submit")
-    
+
+# This is depreciated don't use it
 class ServerForm(FlaskForm):
     server_properties = [
         "level-seed",

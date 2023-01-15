@@ -405,6 +405,11 @@ def get_terminal(server_id):
   
   return render_template('terminal.html', docker_id=server.docker_id)
 
+@app.get("/users/servers/")
+def get_users_servers():
+
+  return render_template('users_servers.html')
+
 @app.get('/mc_command/')
 def mc_command():
   query = request.args
