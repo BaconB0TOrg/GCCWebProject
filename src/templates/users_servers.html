@@ -11,10 +11,6 @@
 <section class="h-100">
     <div class="container h-100">
         <div class="row justify-content-sm-center h-100">
-            <div class="text-center my-5">
-                <img src="https://via.placeholder.com/125x50" alt="logo" width="100">
-            </div>
-
             <div class="p-3">
                 <div class="d-flex flex-row justify-content-start">
                     <h3>Your Servers</h3>
@@ -28,49 +24,50 @@
                 <div class="card shadow-lg blue w-95">
                     <div class="card-body">
                         <div class="container-fluid">
-                            <div class="row g-0 justify-content-center">
+                            <div class="row g-0 justify-content-center" >
                                 <div class="col-2 text-center">
-                                    <p>Server Name</p>
+                                    <span>Server Name</span>
                                 </div>
                                 <div class="col-2 text-center">
-                                    <p>Status</p>
+                                    <span>Status</span>
                                 </div>
                                 <div class="col-1 text-center">
-                                    <p>Plan</p>
+                                    <span>Plan</span>
                                 </div>
                                 <div class="col-2 text-center">
-                                    <p>IP Address</p>
+                                    <span>IP Address</span>
                                 </div>
                                 <div class="col-2 text-center">
-                                    <p>Players</p>
+                                    <span>Players</span>
                                 </div>
                                 <div class="col-1 text-center">
                             
                                 </div>
                             </div>
-
+                            <hr class="h-0"/>
                             {% for i in servers %}
                                 <div class="row g-0 justify-content-center">
                                     <div class="col-2 text-center">
-                                        <p>{{i.name}}</p>
+                                        <span>{{i.name}}</span>
                                     </div>
                                     <div class="col-2 text-center">
-                                        <p>Online</p>
+                                        <span>Online</span>
                                     </div>
                                     <div class="col-1 text-center">
-                                        <p>2 GB</p>
+                                        <span>2 GB</span>
                                     </div>
                                     <div class="col-2 text-center">
-                                        <p>127.0.0.1:25565</p>
+                                        <span>127.0.0.1:25565</span>
                                     </div>
                                     <div class="col-2 text-center">
-                                        <p>0/50</p>
+                                        <span>0/50</span>
                                     </div>
                                     <div class="col-1 text-center">
                                         <a class="hover__item link__server">edit</a>
                                         <a class="hover__item link__server">delete</a>
                                     </div>
                                 </div>
+                                <hr />
                             {% endfor %}
                         </div>
                     </div>
