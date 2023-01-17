@@ -369,12 +369,10 @@ def get_terminal(server_id):
   return render_template('terminal.html', docker_id=server.docker_id)
 
 
-@app.get("/users/<int:user_id>/servers/")
-def get_users_servers(user_id):
-  if user_id == None:
-    return redirect('400.html', 400)
-
-  users_server = Server.query.filter_by(owner_id=user_id).all()
+@app.get("/servers/my/")
+@login_required
+def get_users_servers():
+  users_server = Server.query.filter_by(owner_id=current_user.id).all()
 
   return render_template('users_servers.html', servers=users_server)
 
