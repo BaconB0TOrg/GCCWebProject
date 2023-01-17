@@ -4,7 +4,7 @@ import tarfile
 from configparser import ConfigParser
 import threading
 
-def make_server(return_container=False, name="mc-default", port=25565, max_players=20, gamemode="survival", threaded=True):
+def make_server(return_container=False, name="mc-default", port=25565, max_players=20, gamemode="survival", threaded=True, testing=False):
     """
     Function to start a docker minecraft server.
 
@@ -32,8 +32,9 @@ def make_server(return_container=False, name="mc-default", port=25565, max_playe
 
         if threaded:
             # Start a threaded process to go ahead and read the mc_server_loggin info
-            thread_x = threading.Thread(target=server_create, args=(mc_server_container, max_players, gamemode,), name="thread")
+            thread_x = threading.Thread(target=server_create, args=(mc_server_container, max_players, gamemode,testing), name="thread")
             thread_x.start()
+            
         else:
             # A non threaded run useful for testing purposes
             server_create(mc_server_container, max_players, gamemode)
@@ -47,7 +48,9 @@ def make_server(return_container=False, name="mc-default", port=25565, max_playe
         return None
 
 
-def server_create(mc_server_container, max_players, gamemode):
+def server_create(mc_server_container, max_players, gamemode, testing=False):
+    if testing:
+        return
     attached = mc_server_container.attach(stream=True, stdout=True, stderr=False, logs=False)
 
     # Looking for a certain string to signal that the mc_server has started
@@ -239,7 +242,7 @@ def start_docker(container_id=None):
 
 def remove_docker(container_id=None):
     """
-    Function to delete a docker, used if the user decides to delete a button
+    Function to delete a docker container, used if the user decides to delete a server
     
     Keyword arguments:
     container_id : String, optional
