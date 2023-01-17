@@ -1,0 +1,94 @@
+{% extends "root.html" %}
+{% block title %}Home{% endblock %}
+{% block seo %}
+<meta name="author" content="Collin Campbell">
+{% endblock %}
+{% block head %}
+<script src=""></script>
+{% endblock %}
+
+{% block content %}
+<section class="h-100">
+    <div class="container h-100">
+        <div class="row justify-content-sm-center h-100">
+            <div class="p-3">
+                <div class="d-flex flex-row justify-content-start">
+                    <h3>Your Servers</h3>
+                    <a class="ms-auto" href="{{url_for('get_create_server')}}">
+                        <button type="button" class="btn btn-primary" id="new__server">
+                            Create Server
+                        </button>
+                    </a>
+                </div>
+                <hr />
+                <div class="card shadow-lg blue w-95">
+                    <div class="card-body">
+                        <div class="container-fluid">
+                            <div class="row g-0 justify-content-center" >
+                                <div class="col-2 text-center">
+                                    <span>Server Name</span>
+                                </div>
+                                <div class="col-2 text-center">
+                                    <span>Status</span>
+                                </div>
+                                <div class="col-1 text-center">
+                                    <span>Plan</span>
+                                </div>
+                                <div class="col-2 text-center">
+                                    <span>IP Address</span>
+                                </div>
+                                <div class="col-2 text-center">
+                                    <span>Players</span>
+                                </div>
+                                <div class="col-1 text-center">
+                            
+                                </div>
+                            </div>
+                            <hr class="h-0"/>
+                            {% for i in servers %}
+                                <div class="row g-0 justify-content-center">
+                                    <div class="col-2 text-center">
+                                        <span>{{i.name}}</span>
+                                    </div>
+                                    <div class="col-2 text-center">
+                                        <span>Online</span>
+                                    </div>
+                                    <div class="col-1 text-center">
+                                        <span>2 GB</span>
+                                    </div>
+                                    <div class="col-2 text-center">
+                                        <span>127.0.0.1:25565</span>
+                                    </div>
+                                    <div class="col-2 text-center">
+                                        <span>0/50</span>
+                                    </div>
+                                    <div class="col-1 text-center">
+                                        <a class="hover__item link__server">edit</a>
+                                        <a class="hover__item link__server">delete</a>
+                                    </div>
+                                </div>
+                                <hr />
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-3">
+                <h3>Followed Servers</h3>
+                <hr />
+                <div class="card shadow-lg blue w-95">
+                    <div class="card-body">
+                        <div class="d-flex flex-row justify-content-start">
+                            <p class="m-auto">Server Name</p>
+                            <p class="m-auto">Status</p>
+                            <p class="m-auto">IP address</p>
+                            <p class="m-auto">Players</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
