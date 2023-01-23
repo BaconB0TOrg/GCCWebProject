@@ -60,11 +60,11 @@
                                         <span>127.0.0.1:25565</span>
                                     </div>
                                     <div class="col-2 text-center">
-                                        <span>0/50</span>
+                                        <span>0/{{i.max_players}}</span>
                                     </div>
                                     <div class="col-1 text-center">
-                                        <a class="hover__item link__server">edit</a>
-                                        <a class="hover__item link__server">delete</a>
+                                        <a class="hover__item link__server" href="{{url_for('get_update_server', server_id=i.id)}}">edit</a>
+                                        <a class="hover__item link__server" hred="#">delete</a>
                                     </div>
                                 </div>
                                 <hr />

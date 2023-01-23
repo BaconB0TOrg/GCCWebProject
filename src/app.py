@@ -282,15 +282,12 @@ def get_update_server(server_id):
     return redirect(url_for('list_server'))
   # user exists and is logged in, server exists and is owned by said user.
   # make form with default field values
-  form = ServerUpdateForm(
-      name=server.name,
-      description=server.description,
-      tags=server.tags,
-      id=server.id
+  form = CreateServerForm(
+      tags = server.tags
   )
   tags = Tag.query.all()
   form.tags.choices = [(t.id, t.name) for t in tags]
-  return render_template('update_server.html', form=form)
+  return render_template('server_creation.html', form=form)
 
 @app.post('/servers/<int:server_id>/update/')
 @login_required
