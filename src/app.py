@@ -285,6 +285,8 @@ def get_update_server(server_id):
   form = CreateServerForm()
   tags = Tag.query.all()
   form.tags.choices = [(t.id, t.name) for t in tags]
+  form.tags.default = [i.id for i in server.tags]
+  form.process()
   return render_template('server_creation.html', form=form, tags=server.tags)
 
 @app.post('/servers/<int:server_id>/update/')
