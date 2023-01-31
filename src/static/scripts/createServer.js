@@ -7,22 +7,22 @@ class CustomSelect {
         this.customSelect.classList.add("select");
 
         this.originalSelectElement.querySelectorAll("option").forEach(optionElement => {
-            const itemElment = document.createElement("div");
+            const itemElement = document.createElement("div");
 
-            itemElment.classList.add("select__item");
-            itemElment.textContent = optionElement.textContent;
-            this.customSelect.appendChild(itemElment);
+            itemElement.classList.add("select__item");
+            itemElement.textContent = optionElement.textContent;
+            this.customSelect.appendChild(itemElement);
 
             // if seleted by default then add the correct class to corelate to that
             if (optionElement.selected){
-                this._select(itemElment);
+                this._select(itemElement);
             }
 
-            itemElment.addEventListener("click", () => {
-                if (itemElment.classList.contains("select__item--selected")){
-                    this._deselect(itemElment);
+            itemElement.addEventListener("click", () => {
+                if (itemElement.classList.contains("select__item--selected")){
+                    this._deselect(itemElement);
                 } else {
-                    this._select(itemElment);
+                    this._select(itemElement);
                 }
             });
         });
@@ -31,18 +31,18 @@ class CustomSelect {
         this.originalSelectElement.style.display = "none";
     }
 
-    _select(itemElment){
-        const index = Array.from(this.customSelect.children).indexOf(itemElment); // finding the index of the child 
+    _select(itemElement){
+        const index = Array.from(this.customSelect.children).indexOf(itemElement); // finding the index of the child 
         
         this.originalSelectElement.querySelectorAll("option")[index].selected = true;
-        itemElment.classList.add("select__item--selected");
+        itemElement.classList.add("select__item--selected");
     }
 
-    _deselect(itemElment){
-        const index = Array.from(this.customSelect.children).indexOf(itemElment); // finding the index of the child 
+    _deselect(itemElement){
+        const index = Array.from(this.customSelect.children).indexOf(itemElement); // finding the index of the child 
         
         this.originalSelectElement.querySelectorAll("option")[index].selected = false;
-        itemElment.classList.remove("select__item--selected");
+        itemElement.classList.remove("select__item--selected");
     }
 }
 
